@@ -48,6 +48,8 @@ class ManagerRequestPage extends StatelessWidget {
                 curr.actionResult != prev.actionResult,
             listener: (context, state) {
               final isApproved = state.actionResult == 'APPROVED';
+              final targetIndex = userRole == UserRole.MANAGER ? 2 : 1;
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Row(
@@ -82,23 +84,17 @@ class ManagerRequestPage extends StatelessWidget {
                           label: 'Xem lịch',
                           textColor: Colors.white,
                           onPressed: () {
-                            final targetIndex = userRole == UserRole.MANAGER
-                                ? 2
-                                : 1;
-                            context.read<MainCubit>().setIndex(targetIndex);
+                            // Use getIt directly to avoid stale context issues
+                            getIt<MainCubit>().setIndex(targetIndex);
                           },
                         )
                       : null,
                 ),
               );
+
               // Auto-navigate to schedule tab after approval
               if (isApproved) {
-                Future.delayed(const Duration(milliseconds: 500), () {
-                  if (context.mounted) {
-                    final targetIndex = userRole == UserRole.MANAGER ? 2 : 1;
-                    context.read<MainCubit>().setIndex(targetIndex);
-                  }
-                });
+                getIt<MainCubit>().setIndex(targetIndex);
               }
             },
             builder: (context, state) {

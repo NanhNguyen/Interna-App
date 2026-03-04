@@ -32,9 +32,9 @@ class ManagerRequestsCubit extends BaseCubit<ManagerRequestsState> {
   Future<void> approveRequest(String id) async {
     try {
       await _scheduleRepo.updateStatus(id, 'APPROVED');
-      await loadAllRequests();
-      getIt<HomeCubit>().loadData();
+      // Emit actionResult FIRST so listener fires before reload resets state
       emit(state.copyWith(actionResult: 'APPROVED'));
+      _reloadAfterAction();
     } catch (e) {
       setError(e.toString());
     }
@@ -43,9 +43,8 @@ class ManagerRequestsCubit extends BaseCubit<ManagerRequestsState> {
   Future<void> rejectRequest(String id) async {
     try {
       await _scheduleRepo.updateStatus(id, 'REJECTED');
-      await loadAllRequests();
-      getIt<HomeCubit>().loadData();
       emit(state.copyWith(actionResult: 'REJECTED'));
+      _reloadAfterAction();
     } catch (e) {
       setError(e.toString());
     }
@@ -54,9 +53,8 @@ class ManagerRequestsCubit extends BaseCubit<ManagerRequestsState> {
   Future<void> approveBatch(String groupId) async {
     try {
       await _scheduleRepo.updateBatchStatus(groupId, 'APPROVED');
-      await loadAllRequests();
-      getIt<HomeCubit>().loadData();
       emit(state.copyWith(actionResult: 'APPROVED'));
+      _reloadAfterAction();
     } catch (e) {
       setError(e.toString());
     }
@@ -65,11 +63,22 @@ class ManagerRequestsCubit extends BaseCubit<ManagerRequestsState> {
   Future<void> rejectBatch(String groupId) async {
     try {
       await _scheduleRepo.updateBatchStatus(groupId, 'REJECTED');
-      await loadAllRequests();
-      getIt<HomeCubit>().loadData();
       emit(state.copyWith(actionResult: 'REJECTED'));
+      _reloadAfterAction();
     } catch (e) {
       setError(e.toString());
     }
+  }
+
+  /// Reload data in background without blocking the UI or overwriting actionResult
+  void _reloadAfterAction() {
+    Future.microtask(() async {
+      try {
+        final res = await _scheduleRepo.getAllSchedules();
+        // Only update requests list, preserve actionResult
+        emit(state.copyWith(status: BaseStatus.success, requests: res));
+        getIt<HomeCubit>().loadData();
+      } catch (_) {}
+    });
   }
 }
