@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import '../../../cubit/base_cubit.dart';
+import '../../../../data/constant/enums.dart';
 import '../../../../data/service/auth_service.dart';
 import '../../../di/di_config.dart';
 import '../../home/cubit/home_cubit.dart';
@@ -41,6 +42,36 @@ class ProfileCubit extends BaseCubit<ProfileState> {
     try {
       await _authService.changePassword(newPassword);
       setSuccess();
+    } catch (e) {
+      setError(e.toString());
+    }
+  }
+
+  Future<void> updateProfile({required String name}) async {
+    setLoading();
+    try {
+      await _authService.updateProfile(name: name);
+      emit(
+        state.copyWith(
+          status: BaseStatus.success,
+          user: _authService.currentUser,
+        ),
+      );
+    } catch (e) {
+      setError(e.toString());
+    }
+  }
+
+  Future<void> uploadAvatar(String filePath) async {
+    setLoading();
+    try {
+      await _authService.uploadAvatar(filePath);
+      emit(
+        state.copyWith(
+          status: BaseStatus.success,
+          user: _authService.currentUser,
+        ),
+      );
     } catch (e) {
       setError(e.toString());
     }

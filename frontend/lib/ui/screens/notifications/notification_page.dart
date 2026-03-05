@@ -340,7 +340,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         text: TextSpan(
                           style: const TextStyle(
                             color: Colors.black87,
-                            fontSize: 14.5,
+                            fontSize: 18,
                           ),
                           children: [
                             TextSpan(
@@ -362,7 +362,7 @@ class _NotificationPageState extends State<NotificationPage> {
                       Text(
                         'Ca: ${first.shift}  •  $timeAgo',
                         style: TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 16,
                           color: Colors.orange.shade700,
                           fontWeight: FontWeight.w600,
                         ),
@@ -456,7 +456,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         text: TextSpan(
                           style: const TextStyle(
                             color: Colors.black87,
-                            fontSize: 14.5,
+                            fontSize: 16,
                           ),
                           children: [
                             TextSpan(
@@ -474,7 +474,7 @@ class _NotificationPageState extends State<NotificationPage> {
                       Text(
                         'Ca: ${req.shift}  •  $timeAgo',
                         style: TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 16,
                           color: Colors.orange.shade700,
                           fontWeight: FontWeight.w600,
                         ),
@@ -556,7 +556,7 @@ class _NotificationPageState extends State<NotificationPage> {
                           fontWeight: isUnread
                               ? FontWeight.bold
                               : FontWeight.w600,
-                          fontSize: 14.5,
+                          fontSize: 18,
                           color: Colors.black87,
                         ),
                       ),
@@ -564,7 +564,7 @@ class _NotificationPageState extends State<NotificationPage> {
                       Text(
                         notification.message,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 16,
                           color: Colors.grey.shade600,
                         ),
                         maxLines: 2,
@@ -574,7 +574,7 @@ class _NotificationPageState extends State<NotificationPage> {
                       Text(
                         _formatTimeAgo(notification.createdAt),
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 14,
                           color: isUnread
                               ? Colors.blue.shade600
                               : Colors.grey.shade400,

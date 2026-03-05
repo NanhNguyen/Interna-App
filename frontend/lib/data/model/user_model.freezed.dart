@@ -26,6 +26,7 @@ mixin _$UserModel {
   String get email => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   UserRole get role => throw _privateConstructorUsedError;
+  String? get avatarUrl => throw _privateConstructorUsedError;
 
   /// Serializes this UserModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -47,6 +48,7 @@ abstract class $UserModelCopyWith<$Res> {
     String email,
     String name,
     UserRole role,
+    String? avatarUrl,
   });
 }
 
@@ -69,6 +71,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? email = null,
     Object? name = null,
     Object? role = null,
+    Object? avatarUrl = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -88,6 +91,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
                 ? _value.role
                 : role // ignore: cast_nullable_to_non_nullable
                       as UserRole,
+            avatarUrl: freezed == avatarUrl
+                ? _value.avatarUrl
+                : avatarUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -108,6 +115,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
     String email,
     String name,
     UserRole role,
+    String? avatarUrl,
   });
 }
 
@@ -129,6 +137,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? email = null,
     Object? name = null,
     Object? role = null,
+    Object? avatarUrl = freezed,
   }) {
     return _then(
       _$UserModelImpl(
@@ -148,6 +157,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
             ? _value.role
             : role // ignore: cast_nullable_to_non_nullable
                   as UserRole,
+        avatarUrl: freezed == avatarUrl
+            ? _value.avatarUrl
+            : avatarUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -161,6 +174,7 @@ class _$UserModelImpl implements _UserModel {
     required this.email,
     required this.name,
     required this.role,
+    this.avatarUrl,
   });
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -175,10 +189,12 @@ class _$UserModelImpl implements _UserModel {
   final String name;
   @override
   final UserRole role;
+  @override
+  final String? avatarUrl;
 
   @override
   String toString() {
-    return 'UserModel(id: $id, email: $email, name: $name, role: $role)';
+    return 'UserModel(id: $id, email: $email, name: $name, role: $role, avatarUrl: $avatarUrl)';
   }
 
   @override
@@ -189,12 +205,15 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.role, role) || other.role == role));
+            (identical(other.role, role) || other.role == role) &&
+            (identical(other.avatarUrl, avatarUrl) ||
+                other.avatarUrl == avatarUrl));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, email, name, role);
+  int get hashCode =>
+      Object.hash(runtimeType, id, email, name, role, avatarUrl);
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -216,6 +235,7 @@ abstract class _UserModel implements UserModel {
     required final String email,
     required final String name,
     required final UserRole role,
+    final String? avatarUrl,
   }) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
@@ -230,6 +250,8 @@ abstract class _UserModel implements UserModel {
   String get name;
   @override
   UserRole get role;
+  @override
+  String? get avatarUrl;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.

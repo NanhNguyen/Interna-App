@@ -67,7 +67,11 @@ export class UsersService {
         if (updateData.role_id) {
             updateData.role = this.mapRoleIdToRole(updateData.role_id);
         }
-        return this.userModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
+        const user = await this.userModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
+        if (user && user.role_id) {
+            user.role = this.mapRoleIdToRole(user.role_id);
+        }
+        return user;
     }
 
     async changePassword(id: string, newPassword: string): Promise<void> {

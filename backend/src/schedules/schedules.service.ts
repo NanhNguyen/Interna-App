@@ -22,7 +22,7 @@ export class SchedulesService {
         for (const manager of managerList) {
             await this.notificationsService.create(
                 manager._id.toString(),
-                'New Schedule Request',
+                'Yêu cầu mới',
                 `${employeeName} vừa gửi lên lịch trình / xin nghỉ. Hãy duyệt ngay.`,
                 type
             );

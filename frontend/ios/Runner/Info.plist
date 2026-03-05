@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Chúng tôi cần truy cập thư viện ảnh của bạn để cập nhật ảnh đại diện.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Chúng tôi cần truy cập máy ảnh của bạn để chụp ảnh đại diện mới.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Chúng tôi cần truy cập micro của bạn cho các tính năng media.</string>
 </dict>
 </plist>

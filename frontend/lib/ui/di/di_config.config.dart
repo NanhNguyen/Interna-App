@@ -15,6 +15,7 @@ import 'package:schedule_management_frontend/data/api/api_client.dart' as _i514;
 import 'package:schedule_management_frontend/data/api/auth_api.dart' as _i161;
 import 'package:schedule_management_frontend/data/api/notification_api.dart'
     as _i450;
+import 'package:schedule_management_frontend/data/api/user_api.dart' as _i152;
 import 'package:schedule_management_frontend/data/repo/auth_repo.dart'
     as _i1072;
 import 'package:schedule_management_frontend/data/repo/auth_repo_impl.dart'
@@ -27,6 +28,9 @@ import 'package:schedule_management_frontend/data/repo/schedule_repo_impl.dart'
     as _i168;
 import 'package:schedule_management_frontend/data/repo/schedule_request_repo.dart'
     as _i611;
+import 'package:schedule_management_frontend/data/repo/user_repo.dart' as _i896;
+import 'package:schedule_management_frontend/data/repo/user_repo_impl.dart'
+    as _i915;
 import 'package:schedule_management_frontend/data/service/auth_service.dart'
     as _i258;
 import 'package:schedule_management_frontend/foundation/storage/token_storage.dart'
@@ -69,8 +73,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i450.NotificationApi>(
       () => _i450.NotificationApi(gh<_i514.ApiClient>()),
     );
+    gh.lazySingleton<_i152.UserApi>(() => _i152.UserApi(gh<_i514.ApiClient>()));
     gh.lazySingleton<_i611.ScheduleRequestRepo>(
       () => _i168.ScheduleRepoImpl(gh<_i514.ApiClient>()),
+    );
+    gh.lazySingleton<_i896.UserRepo>(
+      () => _i915.UserRepoImpl(gh<_i152.UserApi>()),
     );
     gh.lazySingleton<_i479.NotificationRepo>(
       () => _i262.NotificationRepoImpl(gh<_i450.NotificationApi>()),
@@ -80,9 +88,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i1072.AuthRepo>(
       () => _i211.AuthRepoImpl(gh<_i161.AuthApi>(), gh<_i220.TokenStorage>()),
-    );
-    gh.lazySingleton<_i258.AuthService>(
-      () => _i258.AuthService(gh<_i1072.AuthRepo>(), gh<_i220.TokenStorage>()),
     );
     gh.factory<_i674.ScheduleCubit>(
       () => _i674.ScheduleCubit(gh<_i611.ScheduleRequestRepo>()),
@@ -96,11 +101,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i359.ManagerRequestsCubit>(
       () => _i359.ManagerRequestsCubit(gh<_i611.ScheduleRequestRepo>()),
     );
-    gh.factory<_i158.ProfileCubit>(
-      () => _i158.ProfileCubit(gh<_i258.AuthService>()),
-    );
-    gh.factory<_i458.LoginCubit>(
-      () => _i458.LoginCubit(gh<_i258.AuthService>()),
+    gh.lazySingleton<_i258.AuthService>(
+      () => _i258.AuthService(
+        gh<_i1072.AuthRepo>(),
+        gh<_i896.UserRepo>(),
+        gh<_i220.TokenStorage>(),
+      ),
     );
     gh.lazySingleton<_i360.HomeCubit>(
       () => _i360.HomeCubit(
@@ -108,6 +114,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i611.ScheduleRequestRepo>(),
         gh<_i479.NotificationRepo>(),
       ),
+    );
+    gh.factory<_i158.ProfileCubit>(
+      () => _i158.ProfileCubit(gh<_i258.AuthService>()),
+    );
+    gh.factory<_i458.LoginCubit>(
+      () => _i458.LoginCubit(gh<_i258.AuthService>()),
     );
     return this;
   }
