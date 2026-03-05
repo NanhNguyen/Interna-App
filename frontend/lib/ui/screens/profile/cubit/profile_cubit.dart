@@ -43,7 +43,20 @@ class ProfileCubit extends BaseCubit<ProfileState> {
         oldPassword: oldPassword,
         newPassword: newPassword,
       );
-      setSuccess();
+
+      // Auto logout after changing password
+      await _authService.logout();
+      if (getIt.isRegistered<HomeCubit>()) {
+        getIt.resetLazySingleton<HomeCubit>();
+      }
+      if (getIt.isRegistered<NotificationCubit>()) {
+        getIt.resetLazySingleton<NotificationCubit>();
+      }
+      if (getIt.isRegistered<MainCubit>()) {
+        getIt.resetLazySingleton<MainCubit>();
+      }
+
+      emit(state.copyWith(status: BaseStatus.success, user: null));
     });
   }
 
