@@ -82,7 +82,7 @@ class _NotificationPageState extends State<NotificationPage> {
             AppStrings.notifications,
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.blue.shade700,
           foregroundColor: Colors.white,
           elevation: 0.5,
         ),
@@ -90,171 +90,188 @@ class _NotificationPageState extends State<NotificationPage> {
           builder: (context, state) {
             return RefreshIndicator(
               onRefresh: _onRefresh,
-              child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  // ── MANAGER/HR: Pending request action cards ──
-                  if (isManagerOrHR) ...[
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                        child: Row(
-                          children: [
-                            const Text(
-                              'Yêu cầu chờ duyệt',
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      // ── MANAGER/HR: Pending request action cards ──
+                      if (isManagerOrHR) ...[
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                            child: Row(
+                              children: [
+                                const Text(
+                                  'Yêu cầu chờ duyệt',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                if (_pendingGroups.isNotEmpty)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      '${_pendingGroups.length}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (_loadingPending)
+                          const SliverToBoxAdapter(
+                            child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Center(child: CircularProgressIndicator()),
+                            ),
+                          )
+                        else if (_pendingGroups.isEmpty)
+                          SliverToBoxAdapter(
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.check_circle_outline,
+                                    color: Colors.green.shade400,
+                                    size: 28,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  const Text(
+                                    AppStrings.noPendingRequests,
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        else
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final item = _pendingGroups[index];
+                              if (item is List<ScheduleRequestModel>) {
+                                return _buildPendingGroupCard(
+                                  context,
+                                  item,
+                                  role,
+                                );
+                              }
+                              return _buildPendingSingleCard(
+                                context,
+                                item as ScheduleRequestModel,
+                                role,
+                              );
+                            }, childCount: _pendingGroups.length),
+                          ),
+                        const SliverToBoxAdapter(child: SizedBox(height: 8)),
+                        const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                            child: Text(
+                              'Thông báo',
                               style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black87,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            if (_pendingGroups.isNotEmpty)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  '${_pendingGroups.length}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (_loadingPending)
-                      const SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Center(child: CircularProgressIndicator()),
-                        ),
-                      )
-                    else if (_pendingGroups.isEmpty)
-                      SliverToBoxAdapter(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.check_circle_outline,
-                                color: Colors.green.shade400,
-                                size: 28,
-                              ),
-                              const SizedBox(width: 12),
-                              const Text(
-                                AppStrings.noPendingRequests,
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
                           ),
                         ),
-                      )
-                    else
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          final item = _pendingGroups[index];
-                          if (item is List<ScheduleRequestModel>) {
-                            return _buildPendingGroupCard(context, item, role);
-                          }
-                          return _buildPendingSingleCard(
+                      ],
+
+                      // ── For Interns: section header ──
+                      if (!isManagerOrHR)
+                        const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                            child: Text(
+                              'Thông báo',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      // ── Notifications list ──
+                      if (state.status == BaseStatus.loading &&
+                          state.notifications.isEmpty)
+                        const SliverToBoxAdapter(
+                          child: Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(40),
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        )
+                      else if (state.notifications.isEmpty)
+                        SliverToBoxAdapter(
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.all(32),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.notifications_none,
+                                  size: 48,
+                                  color: Colors.grey.shade400,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  AppStrings.noNotifications,
+                                  style: TextStyle(color: Colors.grey.shade600),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      else
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate((
                             context,
-                            item as ScheduleRequestModel,
-                            role,
-                          );
-                        }, childCount: _pendingGroups.length),
-                      ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 8)),
-                    const SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-                        child: Text(
-                          'Thông báo',
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
+                            index,
+                          ) {
+                            final notif = state.notifications[index];
+                            return _buildNotificationCard(context, notif);
+                          }, childCount: state.notifications.length),
                         ),
-                      ),
-                    ),
-                  ],
-
-                  // ── For Interns: section header ──
-                  if (!isManagerOrHR)
-                    const SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                        child: Text(
-                          'Thông báo',
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                  // ── Notifications list ──
-                  if (state.status == BaseStatus.loading &&
-                      state.notifications.isEmpty)
-                    const SliverToBoxAdapter(
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(40),
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                    )
-                  else if (state.notifications.isEmpty)
-                    SliverToBoxAdapter(
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 16),
-                        padding: const EdgeInsets.all(32),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.notifications_none,
-                              size: 48,
-                              color: Colors.grey.shade400,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              AppStrings.noNotifications,
-                              style: TextStyle(color: Colors.grey.shade600),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  else
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final notif = state.notifications[index];
-                        return _buildNotificationCard(context, notif);
-                      }, childCount: state.notifications.length),
-                    ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                ],
+                      const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                    ],
+                  ),
+                ),
               ),
             );
           },

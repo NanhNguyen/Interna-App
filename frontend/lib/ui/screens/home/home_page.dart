@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:auto_route/auto_route.dart';
 import '../../../data/constant/enums.dart';
 import '../../../data/model/schedule_request_model.dart';
 import '../../../data/service/auth_service.dart';
 import '../../di/di_config.dart';
-import '../../router/app_router.gr.dart';
 import '../main/cubit/main_cubit.dart';
+import '../schedule_form/schedule_form_modal.dart';
 import 'cubit/home_cubit.dart';
 import 'cubit/home_state.dart';
 import '../../../resource/app_strings.dart';
@@ -26,33 +25,7 @@ class HomePage extends StatelessWidget {
               style: TextStyle(color: Colors.white),
             ),
             iconTheme: const IconThemeData(color: Colors.white),
-            actions: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.notifications_none,
-                      size: 32,
-                      color: Colors.white,
-                    ),
-                    onPressed: () =>
-                        context.pushRoute(const NotificationRoute()),
-                  ),
-                  // Badge: only unread notifications (like Facebook bell)
-                  if (state.unreadNotificationCount > 0)
-                    Positioned(
-                      right: 6,
-                      top: 6,
-                      child: _buildBadge(
-                        state.unreadNotificationCount,
-                        color: Colors.red,
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(width: 10),
-            ],
+            actions: [const SizedBox(width: 10)],
           ),
           body: RefreshIndicator(
             onRefresh: () => context.read<HomeCubit>().loadData(),
@@ -157,85 +130,23 @@ class HomePage extends StatelessWidget {
             final role =
                 getIt<AuthService>().currentUser?.role ?? UserRole.INTERN;
             if (role == UserRole.INTERN || role == UserRole.EMPLOYEE) {
-              return FloatingActionButton(
+              return FloatingActionButton.extended(
                 onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
-                      ),
-                    ),
-                    builder: (context) => Container(
-                      padding: const EdgeInsets.symmetric(vertical: 24),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ListTile(
-                            leading: const Icon(
-                              Icons.repeat,
-                              color: Colors.blue,
-                            ),
-                            title: const Text(AppStrings.recurringLeave),
-                            onTap: () {
-                              Navigator.pop(context);
-                              context.router.push(
-                                ScheduleFormRoute(isInitialRecurring: true),
-                              );
-                            },
-                          ),
-                          ListTile(
-                            leading: const Icon(
-                              Icons.event,
-                              color: Colors.orange,
-                            ),
-                            title: const Text(AppStrings.adhocLeave),
-                            onTap: () {
-                              Navigator.pop(context);
-                              context.router.push(
-                                ScheduleFormRoute(isInitialRecurring: false),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+                  showScheduleFormModal(context, isInitialRecurring: false);
                 },
                 backgroundColor: Colors.blue.shade700,
                 foregroundColor: Colors.white,
-                child: const Icon(Icons.add),
+                icon: const Icon(Icons.add),
+                label: const Text(
+                  AppStrings.registerLeave,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               );
             }
             return null;
           }(),
         );
       },
-    );
-  }
-
-  /// Shared badge widget used for notification bell and tab badges.
-  /// Shows "99+" when count exceeds 99, like Facebook/iOS convention.
-  Widget _buildBadge(int count, {Color color = Colors.red}) {
-    final label = count > 99 ? '99+' : '$count';
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white, width: 1.5),
-      ),
-      constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          height: 1.1,
-        ),
-        textAlign: TextAlign.center,
-      ),
     );
   }
 
@@ -419,8 +330,9 @@ class HomePage extends StatelessWidget {
                       AppStrings.recurringLeave,
                       Icons.repeat,
                       Colors.blue,
-                      onTap: () => context.router.push(
-                        ScheduleFormRoute(isInitialRecurring: true),
+                      onTap: () => showScheduleFormModal(
+                        context,
+                        isInitialRecurring: true,
                       ),
                     ),
                     _buildActionItem(
@@ -428,8 +340,9 @@ class HomePage extends StatelessWidget {
                       AppStrings.adhocLeave,
                       Icons.event_note,
                       Colors.orange,
-                      onTap: () => context.router.push(
-                        ScheduleFormRoute(isInitialRecurring: false),
+                      onTap: () => showScheduleFormModal(
+                        context,
+                        isInitialRecurring: false,
                       ),
                     ),
                     _buildActionItem(

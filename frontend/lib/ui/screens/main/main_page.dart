@@ -9,6 +9,7 @@ import '../schedule/schedule_page.dart';
 import '../status/status_page.dart';
 import '../profile/profile_page.dart';
 import '../manager/manager_request_page.dart';
+import '../notifications/notification_page.dart';
 import '../schedule/cubit/schedule_cubit.dart';
 import 'cubit/main_cubit.dart';
 import 'cubit/main_state.dart';
@@ -33,7 +34,6 @@ class _MainPageState extends State<MainPage> {
 
   late final UserRole _userRole;
   late final List<Widget> _pages;
-  late final List<BottomNavigationBarItem> _navItems;
   late final Color _selectedColor;
 
   @override
@@ -47,7 +47,6 @@ class _MainPageState extends State<MainPage> {
     _notifCubit = getIt<NotificationCubit>()..loadNotifications();
 
     _pages = _getPagesForRole(_userRole);
-    _navItems = _getNavItemsForRole(_userRole);
     _selectedColor = _getColorForRole(_userRole);
   }
 
@@ -69,8 +68,11 @@ class _MainPageState extends State<MainPage> {
 
               final isWideScreen = MediaQuery.of(context).size.width >= 800;
               final currentNavItems = _userRole == UserRole.MANAGER
-                  ? _getManagerNavItemsWithBadge(context)
-                  : _navItems;
+                  ? _getManagerNavItemsWithBadge(
+                      context,
+                      unreadNotifications.length,
+                    )
+                  : _getNavItemsWithBadge(unreadNotifications.length);
 
               return InAppNotificationOverlay(
                 notifications: notifState.notifications,
@@ -147,16 +149,15 @@ class _MainPageState extends State<MainPage> {
                                           ),
                                       onTap: () {
                                         _mainCubit.setIndex(index);
-                                        if ((_userRole == UserRole.INTERN &&
-                                                index == 1) ||
-                                            (_userRole == UserRole.MANAGER &&
-                                                index == 2) ||
-                                            (_userRole == UserRole.HR &&
-                                                index == 1)) {
+                                        if (_isScheduleIndex(index)) {
                                           getIt<ScheduleCubit>().loadSchedules(
                                             _userRole,
                                           );
                                           getIt<ScheduleCubit>().resetDate();
+                                        }
+                                        if (index == _getNotificationIndex()) {
+                                          _notifCubit.markAllAsRead();
+                                          getIt<HomeCubit>().loadData();
                                         }
                                       },
                                     );
@@ -182,11 +183,13 @@ class _MainPageState extends State<MainPage> {
                           currentIndex: state.currentIndex,
                           onTap: (index) {
                             _mainCubit.setIndex(index);
-                            if ((_userRole == UserRole.INTERN && index == 1) ||
-                                (_userRole == UserRole.MANAGER && index == 2) ||
-                                (_userRole == UserRole.HR && index == 1)) {
+                            if (_isScheduleIndex(index)) {
                               getIt<ScheduleCubit>().loadSchedules(_userRole);
                               getIt<ScheduleCubit>().resetDate();
+                            }
+                            if (index == _getNotificationIndex(_userRole)) {
+                              _notifCubit.markAllAsRead();
+                              getIt<HomeCubit>().loadData();
                             }
                           },
                           type: BottomNavigationBarType.fixed,
@@ -209,9 +212,10 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  /// Build manager nav items with live pending-request badge on tab 1.
+  /// Build manager nav items with live pending-request badge on tab 1 and notifications on tab 2.
   List<BottomNavigationBarItem> _getManagerNavItemsWithBadge(
     BuildContext context,
+    int unreadNotifCount,
   ) {
     final pendingCount = context.watch<HomeCubit>().state.pendingCount;
     return [
@@ -237,6 +241,19 @@ class _MainPageState extends State<MainPage> {
         icon: Icon(Icons.calendar_month_outlined),
         activeIcon: Icon(Icons.calendar_month),
         label: AppStrings.schedule,
+      ),
+      BottomNavigationBarItem(
+        icon: _withBadge(
+          Icons.notifications_outlined,
+          unreadNotifCount,
+          active: false,
+        ),
+        activeIcon: _withBadge(
+          Icons.notifications,
+          unreadNotifCount,
+          active: true,
+        ),
+        label: AppStrings.notifications,
       ),
       const BottomNavigationBarItem(
         icon: Icon(Icons.person_outline),
@@ -283,82 +300,98 @@ class _MainPageState extends State<MainPage> {
   List<Widget> _getPagesForRole(UserRole role) {
     switch (role) {
       case UserRole.MANAGER:
-        return const [
-          HomePage(),
-          ManagerRequestPage(),
-          SchedulePage(),
-          ProfilePage(),
+        return [
+          const HomePage(),
+          const ManagerRequestPage(),
+          const SchedulePage(),
+          const NotificationPage(),
+          const ProfilePage(),
         ];
       case UserRole.HR:
-        return const [HomePage(), SchedulePage(), ProfilePage()];
+        return [
+          const HomePage(),
+          const SchedulePage(),
+          const NotificationPage(),
+          const ProfilePage(),
+        ];
       case UserRole.INTERN:
       case UserRole.EMPLOYEE:
-        return const [HomePage(), SchedulePage(), StatusPage(), ProfilePage()];
+        return [
+          const HomePage(),
+          const SchedulePage(),
+          const StatusPage(),
+          const NotificationPage(),
+          const ProfilePage(),
+        ];
     }
   }
 
-  List<BottomNavigationBarItem> _getNavItemsForRole(UserRole role) {
-    switch (role) {
+  List<BottomNavigationBarItem> _getNavItemsWithBadge(int unreadCount) {
+    switch (_userRole) {
       case UserRole.MANAGER:
-        return const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: AppStrings.home,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.admin_panel_settings_outlined),
-            activeIcon: Icon(Icons.admin_panel_settings),
-            label: AppStrings.manage,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month_outlined),
-            activeIcon: Icon(Icons.calendar_month),
-            label: AppStrings.schedule,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: AppStrings.profile,
-          ),
-        ];
+        return _getManagerNavItemsWithBadge(context, unreadCount);
       case UserRole.HR:
-        return const [
-          BottomNavigationBarItem(
+        return [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
             label: AppStrings.home,
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month_outlined),
             activeIcon: Icon(Icons.calendar_month),
             label: AppStrings.schedule,
           ),
           BottomNavigationBarItem(
+            icon: _withBadge(
+              Icons.notifications_outlined,
+              unreadCount,
+              active: false,
+            ),
+            activeIcon: _withBadge(
+              Icons.notifications,
+              unreadCount,
+              active: true,
+            ),
+            label: AppStrings.notifications,
+          ),
+          const BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             activeIcon: Icon(Icons.person),
             label: AppStrings.profile,
           ),
         ];
-      case UserRole.INTERN:
-      case UserRole.EMPLOYEE:
-        return const [
-          BottomNavigationBarItem(
+      default: // INTERN
+        return [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
             label: AppStrings.home,
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month_outlined),
             activeIcon: Icon(Icons.calendar_month),
             label: AppStrings.schedule,
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.assignment_outlined),
             activeIcon: Icon(Icons.assignment),
             label: AppStrings.status,
           ),
           BottomNavigationBarItem(
+            icon: _withBadge(
+              Icons.notifications_outlined,
+              unreadCount,
+              active: false,
+            ),
+            activeIcon: _withBadge(
+              Icons.notifications,
+              unreadCount,
+              active: true,
+            ),
+            label: AppStrings.notifications,
+          ),
+          const BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             activeIcon: Icon(Icons.person),
             label: AppStrings.profile,
@@ -367,15 +400,30 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  Color _getColorForRole(UserRole role) {
-    switch (role) {
+  bool _isScheduleIndex(int index) {
+    switch (_userRole) {
       case UserRole.MANAGER:
-        return Colors.deepPurple;
+        return index == 2;
       case UserRole.HR:
-        return Colors.teal;
-      case UserRole.INTERN:
-      case UserRole.EMPLOYEE:
-        return Colors.blue.shade700;
+        return index == 1;
+      default: // INTERN
+        return index == 1;
     }
+  }
+
+  int _getNotificationIndex([UserRole? role]) {
+    final r = role ?? _userRole;
+    switch (r) {
+      case UserRole.MANAGER:
+        return 3;
+      case UserRole.HR:
+        return 2;
+      default: // INTERN
+        return 3;
+    }
+  }
+
+  Color _getColorForRole(UserRole role) {
+    return Colors.blue.shade700;
   }
 }

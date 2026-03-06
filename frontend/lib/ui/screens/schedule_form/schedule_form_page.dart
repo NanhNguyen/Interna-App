@@ -51,7 +51,6 @@ class ScheduleFormPage extends StatelessWidget {
 
           return Scaffold(
             appBar: AppBar(
-              centerTitle: true,
               title: Text(
                 isRecurring ? AppStrings.recurringLeave : AppStrings.adhocLeave,
                 style: const TextStyle(color: Colors.white),

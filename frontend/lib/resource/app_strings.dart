@@ -96,6 +96,7 @@ class AppStrings {
   static const String addNotes = 'Thêm ghi chú hoặc lý do cụ thể...';
   static const String submitLeave = 'Gửi yêu cầu nghỉ phép';
   static const String confirmRegistration = 'Xác nhận đăng ký';
+  static const String registerLeave = 'Đăng ký nghỉ';
   static const String addDate = 'Thêm ngày';
   static const String selectDate = 'Chọn ngày';
   static const String done = 'Xong';
@@ -128,7 +129,7 @@ class AppStrings {
 
   // Home
   static const String scheduleOverview = 'Tổng quan lịch nghỉ';
-  static const String welcomeBack = 'Chào mừng quay trở lại,';
+  static const String welcomeBack = 'Chào mừng quay trở lại';
   static const String onLeaveToday = 'ĐANG NGHỈ HÔM NAY';
   static const String workingToday = 'ĐANG LÀM VIỆC HÔM NAY';
   static const String quickActions = 'Thao tác nhanh';
