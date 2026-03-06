@@ -63,6 +63,14 @@ export class UsersService {
         });
     }
 
+    async getManagers(): Promise<User[]> {
+        const managers = await this.userModel.find({ role_id: '69649765edf9b4ac54f3c598' }).select('-password_hash').exec();
+        return managers.map(user => {
+            user.role = UserRole.MANAGER;
+            return user;
+        });
+    }
+
     async update(id: string, updateData: Partial<User>): Promise<User | null> {
         if (updateData.role_id) {
             updateData.role = this.mapRoleIdToRole(updateData.role_id);

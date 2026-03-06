@@ -8,6 +8,7 @@ import '../home/home_page.dart';
 import '../schedule/schedule_page.dart';
 import '../status/status_page.dart';
 import '../profile/profile_page.dart';
+import '../accounts/accounts_page.dart';
 import '../manager/manager_request_page.dart';
 import '../notifications/notification_page.dart';
 import '../schedule/cubit/schedule_cubit.dart';
@@ -311,6 +312,7 @@ class _MainPageState extends State<MainPage> {
         return [
           const HomePage(),
           const SchedulePage(),
+          const AccountsPage(),
           const NotificationPage(),
           const ProfilePage(),
         ];
@@ -341,6 +343,11 @@ class _MainPageState extends State<MainPage> {
             icon: Icon(Icons.calendar_month_outlined),
             activeIcon: Icon(Icons.calendar_month),
             label: AppStrings.schedule,
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.group_add_outlined),
+            activeIcon: Icon(Icons.group_add),
+            label: 'Tài khoản',
           ),
           BottomNavigationBarItem(
             icon: _withBadge(

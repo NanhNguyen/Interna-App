@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { ScheduleRequest, RequestStatus } from './schemas/schedule-request.schema';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
-import { UserRole } from '../users/schemas/user.schema';
+import { User, UserRole } from '../users/schemas/user.schema';
 
 @Injectable()
 export class SchedulesService {
@@ -15,11 +15,23 @@ export class SchedulesService {
         private usersService: UsersService,
     ) { }
 
-    private async notifyManagers(employeeName: string, type: string) {
-        const managers = await this.usersService.findAll();
-        const managerList = managers.filter(u => u.role === UserRole.MANAGER);
+    private async notifyManagers(employee: any, type: string) {
+        if (!employee) return;
 
-        for (const manager of managerList) {
+        let targetManagers: User[] = [];
+
+        if (employee.managerId) {
+            const directManager = await this.usersService.findById(employee.managerId.toString());
+            if (directManager) {
+                targetManagers.push(directManager);
+            }
+        } else {
+            const allUsers = await this.usersService.findAll();
+            targetManagers = allUsers.filter(u => u.role === UserRole.MANAGER);
+        }
+
+        const employeeName = employee.name || 'an employee';
+        for (const manager of targetManagers) {
             await this.notificationsService.create(
                 manager._id.toString(),
                 'Yêu cầu mới',
@@ -38,7 +50,7 @@ export class SchedulesService {
 
         // Notify Managers
         const employee = await this.usersService.findById(employee_id);
-        await this.notifyManagers(employee?.name || 'an employee', 'REQUEST_CREATED');
+        await this.notifyManagers(employee, 'REQUEST_CREATED');
 
         return savedRequest;
     }
@@ -52,7 +64,7 @@ export class SchedulesService {
 
         // Notify Managers
         const employee = await this.usersService.findById(employee_id);
-        await this.notifyManagers(employee?.name || 'an employee', 'REQUEST_CREATED');
+        await this.notifyManagers(employee, 'REQUEST_CREATED');
 
         return savedRequests;
     }

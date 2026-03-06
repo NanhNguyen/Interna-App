@@ -33,6 +33,8 @@ import 'package:schedule_management_frontend/data/repo/user_repo_impl.dart'
     as _i915;
 import 'package:schedule_management_frontend/data/service/auth_service.dart'
     as _i258;
+import 'package:schedule_management_frontend/data/service/user_service.dart'
+    as _i200;
 import 'package:schedule_management_frontend/foundation/storage/token_storage.dart'
     as _i220;
 import 'package:schedule_management_frontend/ui/router/app_router.dart'
@@ -73,6 +75,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i152.UserApi>(() => _i152.UserApi(gh<_i514.ApiClient>()));
     gh.lazySingleton<_i450.NotificationApi>(
       () => _i450.NotificationApi(gh<_i514.ApiClient>()),
+    );
+    gh.lazySingleton<_i200.UserService>(
+      () => _i200.UserService(gh<_i514.ApiClient>()),
     );
     gh.lazySingleton<_i611.ScheduleRequestRepo>(
       () => _i168.ScheduleRepoImpl(gh<_i514.ApiClient>()),

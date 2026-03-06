@@ -31,6 +31,9 @@ export class User extends Document {
 
     @Prop()
     avatarUrl: string;
+
+    @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+    managerId: any;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

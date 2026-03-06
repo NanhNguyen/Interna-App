@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, UseInterceptors, UploadedFile, UnauthorizedException, Get } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -42,5 +42,41 @@ export class UsersController {
         const avatarUrl = `/uploads/${file.filename}`;
         const user = await this.usersService.update(req.user.id, { avatarUrl });
         return user;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('managers')
+    async getManagers() {
+        return this.usersService.getManagers();
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('create-account')
+    async createAccount(@Request() req, @Body() createUserDto: any) {
+        if (req.user.role !== 'HR') {
+            throw new UnauthorizedException('Chỉ HR mới có quyền tạo tài khoản.');
+        }
+
+        let roleId = '69649755edf9b4ac54f3c596'; // default INTERN
+        if (createUserDto.role === 'INTERN') roleId = '69649755edf9b4ac54f3c596';
+        if (createUserDto.role === 'MANAGER') roleId = '69649765edf9b4ac54f3c598';
+        if (createUserDto.role === 'HR') roleId = '6964978cedf9b4ac54f3c59a';
+
+        const userData: any = {
+            email: createUserDto.email,
+            password_hash: createUserDto.password,
+            name: createUserDto.name,
+            role_id: roleId,
+        };
+
+        if (createUserDto.role === 'INTERN' && createUserDto.managerId) {
+            userData.managerId = createUserDto.managerId;
+        }
+
+        const user = await this.usersService.create(userData);
+        // remove password_hash from response
+        const userObj = user.toObject();
+        delete userObj.password_hash;
+        return { message: 'Tạo tài khoản thành công', user: userObj };
     }
 }
