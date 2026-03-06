@@ -144,146 +144,196 @@ class _SchedulePageState extends State<SchedulePage> {
 
     return RefreshIndicator(
       onRefresh: () => context.read<ScheduleCubit>().loadSchedules(_userRole),
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          children: [
-            _buildLegend(isManagerOrHR),
-            Card(
-              margin: EdgeInsets.zero,
-              elevation: 4,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(16),
-                  bottomRight: Radius.circular(16),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth >= 800;
+          final calendarWidget = Card(
+            margin: EdgeInsets.zero,
+            elevation: 4,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(16),
+                bottomRight: Radius.circular(16),
+              ),
+            ),
+            child: TableCalendar(
+              firstDay: DateTime(2020),
+              lastDay: DateTime(2030),
+              focusedDay: _focusedDay,
+              calendarFormat: format,
+              availableCalendarFormats: const {
+                CalendarFormat.month: 'Month',
+                CalendarFormat.week: 'Week',
+              },
+              locale: 'vi',
+              rowHeight: format == CalendarFormat.week ? 180 : 80,
+              headerStyle: const HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: true,
+                titleTextStyle: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueAccent,
                 ),
               ),
-              child: TableCalendar(
-                firstDay: DateTime(2020),
-                lastDay: DateTime(2030),
-                focusedDay: _focusedDay,
-                calendarFormat: format,
-                availableCalendarFormats: const {
-                  CalendarFormat.month: 'Month',
-                  CalendarFormat.week: 'Week',
+              daysOfWeekHeight: 45,
+              daysOfWeekStyle: DaysOfWeekStyle(
+                weekdayStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.grey.shade700,
+                ),
+                weekendStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.redAccent,
+                ),
+              ),
+              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+              onDaySelected: (selectedDay, focusedDay) {
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay;
+                });
+              },
+              onPageChanged: (focusedDay) {
+                setState(() => _focusedDay = focusedDay);
+              },
+              eventLoader: (day) => _getSchedulesForDay(
+                filteredSchedules,
+                day,
+              ).where((s) => s.isRecurring == isRecurringTab).toList(),
+              calendarBuilders: CalendarBuilders(
+                dowBuilder: (context, day) {
+                  final text = DateFormat.E('vi').format(day);
+                  return Center(
+                    child: Text(
+                      text,
+                      style: TextStyle(
+                        color: day.weekday == DateTime.sunday
+                            ? Colors.redAccent
+                            : Colors.grey.shade700,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  );
                 },
-                locale: 'vi',
-                rowHeight: format == CalendarFormat.week ? 180 : 80,
-                headerStyle: const HeaderStyle(
-                  formatButtonVisible: false,
-                  titleCentered: true,
-                  titleTextStyle: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
+                defaultBuilder: format == CalendarFormat.week
+                    ? (context, day, focusedDay) => _buildWeekDayCell(
+                        day,
+                        filteredSchedules
+                            .where((s) => s.isRecurring == isRecurringTab)
+                            .toList(),
+                        isSelected: false,
+                        isToday: false,
+                        isManagerOrHR: isManagerOrHR,
+                      )
+                    : null,
+                todayBuilder: format == CalendarFormat.week
+                    ? (context, day, focusedDay) => _buildWeekDayCell(
+                        day,
+                        filteredSchedules
+                            .where((s) => s.isRecurring == isRecurringTab)
+                            .toList(),
+                        isSelected: false,
+                        isToday: true,
+                        isManagerOrHR: isManagerOrHR,
+                      )
+                    : null,
+                selectedBuilder: format == CalendarFormat.week
+                    ? (context, day, focusedDay) => _buildWeekDayCell(
+                        day,
+                        filteredSchedules
+                            .where((s) => s.isRecurring == isRecurringTab)
+                            .toList(),
+                        isSelected: true,
+                        isToday: false,
+                        isManagerOrHR: isManagerOrHR,
+                      )
+                    : null,
+                markerBuilder: (context, date, events) {
+                  if (format == CalendarFormat.week) {
+                    return const SizedBox();
+                  }
+                  if (events.isEmpty) return const SizedBox();
+                  final items = events
+                      .cast<ScheduleRequestModel>()
+                      .where((s) => s.isRecurring == isRecurringTab)
+                      .toList();
+                  if (items.isEmpty) return const SizedBox();
+                  return _buildMonthMarkerDots(items, isManagerOrHR);
+                },
+              ),
+            ),
+          );
+
+          final eventListWidget = _buildEventList(
+            filteredSchedules
+                .where((s) => s.isRecurring == isRecurringTab)
+                .toList(),
+            isManagerOrHR,
+          );
+
+          if (isWide) {
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [_buildLegend(isManagerOrHR), calendarWidget],
+                    ),
                   ),
                 ),
-                daysOfWeekHeight: 45,
-                daysOfWeekStyle: DaysOfWeekStyle(
-                  weekdayStyle: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.grey.shade700,
-                  ),
-                  weekendStyle: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.redAccent,
-                  ),
-                ),
-                selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay = focusedDay;
-                  });
-                },
-                onPageChanged: (focusedDay) {
-                  setState(() => _focusedDay = focusedDay);
-                },
-                eventLoader: (day) => _getSchedulesForDay(
-                  filteredSchedules,
-                  day,
-                ).where((s) => s.isRecurring == isRecurringTab).toList(),
-                calendarBuilders: CalendarBuilders(
-                  dowBuilder: (context, day) {
-                    final text = DateFormat.E('vi').format(day);
-                    return Center(
-                      child: Text(
-                        text,
-                        style: TextStyle(
-                          color: day.weekday == DateTime.sunday
-                              ? Colors.redAccent
-                              : Colors.grey.shade700,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                const VerticalDivider(width: 1, thickness: 1),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        color: Colors.white,
+                        child: Text(
+                          _selectedDay != null
+                              ? 'Lịch trình ngày ${DateFormat('dd/MM', 'vi').format(_selectedDay!)}'
+                              : 'Chọn một ngày',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    );
-                  },
-                  defaultBuilder: format == CalendarFormat.week
-                      ? (context, day, focusedDay) => _buildWeekDayCell(
-                          day,
-                          filteredSchedules
-                              .where((s) => s.isRecurring == isRecurringTab)
-                              .toList(),
-                          isSelected: false,
-                          isToday: false,
-                          isManagerOrHR: isManagerOrHR,
-                        )
-                      : null,
-                  todayBuilder: format == CalendarFormat.week
-                      ? (context, day, focusedDay) => _buildWeekDayCell(
-                          day,
-                          filteredSchedules
-                              .where((s) => s.isRecurring == isRecurringTab)
-                              .toList(),
-                          isSelected: false,
-                          isToday: true,
-                          isManagerOrHR: isManagerOrHR,
-                        )
-                      : null,
-                  selectedBuilder: format == CalendarFormat.week
-                      ? (context, day, focusedDay) => _buildWeekDayCell(
-                          day,
-                          filteredSchedules
-                              .where((s) => s.isRecurring == isRecurringTab)
-                              .toList(),
-                          isSelected: true,
-                          isToday: false,
-                          isManagerOrHR: isManagerOrHR,
-                        )
-                      : null,
-                  markerBuilder: (context, date, events) {
-                    if (format == CalendarFormat.week) {
-                      return const SizedBox();
-                    }
-                    if (events.isEmpty) return const SizedBox();
-                    final items = events
-                        .cast<ScheduleRequestModel>()
-                        .where((s) => s.isRecurring == isRecurringTab)
-                        .toList();
-                    if (items.isEmpty) return const SizedBox();
-                    return _buildMonthMarkerDots(items, isManagerOrHR);
-                  },
+                      const Divider(height: 1),
+                      Expanded(child: eventListWidget),
+                    ],
+                  ),
                 ),
-              ),
+              ],
+            );
+          }
+
+          return SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                _buildLegend(isManagerOrHR),
+                calendarWidget,
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Divider(),
+                ),
+                SizedBox(
+                  height: 400, // Fixed height on mobile for scrollable list
+                  child: eventListWidget,
+                ),
+              ],
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Divider(),
-            ),
-            SizedBox(
-              height: 400,
-              child: _buildEventList(
-                filteredSchedules
-                    .where((s) => s.isRecurring == isRecurringTab)
-                    .toList(),
-                isManagerOrHR,
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

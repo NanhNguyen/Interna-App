@@ -67,20 +67,6 @@ class App extends StatelessWidget {
         ),
       ),
       routerConfig: appRouter.config(),
-      builder: (context, child) {
-        // This makes the app responsive by constraining its width on large screens
-        return Container(
-          color: Colors.grey.shade200, // Background color for web
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 600, // Mobile-like width for web
-              ),
-              child: ClipRect(child: child!),
-            ),
-          ),
-        );
-      },
     );
   }
 }

@@ -52,76 +52,82 @@ class ProfilePage extends StatelessWidget {
                 ? const Center(child: CircularProgressIndicator())
                 : SingleChildScrollView(
                     padding: const EdgeInsets.all(24),
-                    child: Column(
-                      children: [
-                        _buildAvatarSection(context, fullAvatarUrl),
-                        const SizedBox(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: Column(
                           children: [
+                            _buildAvatarSection(context, fullAvatarUrl),
+                            const SizedBox(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  user?.name ?? 'User Name',
+                                  style: const TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    size: 20,
+                                    color: Colors.blue,
+                                  ),
+                                  onPressed: () => _showEditNameDialog(
+                                    context,
+                                    user?.name ?? '',
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
                             Text(
-                              user?.name ?? 'User Name',
+                              user?.email ?? 'email@example.com',
                               style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                                fontSize: 18,
                               ),
                             ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.edit,
-                                size: 20,
-                                color: Colors.blue,
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 6,
                               ),
-                              onPressed: () => _showEditNameDialog(
-                                context,
-                                user?.name ?? '',
+                              decoration: BoxDecoration(
+                                color: Colors.blue.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
                               ),
+                              child: Text(
+                                user?.role.displayName ?? 'Role',
+                                style: const TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 48),
+                            _buildOptionTile(
+                              context,
+                              icon: Icons.lock_outline,
+                              title: AppStrings.changePassword,
+                              onTap: () => _showChangePasswordDialog(context),
+                            ),
+                            const Divider(),
+                            _buildOptionTile(
+                              context,
+                              icon: Icons.logout,
+                              title: AppStrings.logout,
+                              isDestructive: true,
+                              onTap: () =>
+                                  context.read<ProfileCubit>().logout(),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          user?.email ?? 'email@example.com',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            user?.role.displayName ?? 'Role',
-                            style: const TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 48),
-                        _buildOptionTile(
-                          context,
-                          icon: Icons.lock_outline,
-                          title: AppStrings.changePassword,
-                          onTap: () => _showChangePasswordDialog(context),
-                        ),
-                        const Divider(),
-                        _buildOptionTile(
-                          context,
-                          icon: Icons.logout,
-                          title: AppStrings.logout,
-                          isDestructive: true,
-                          onTap: () => context.read<ProfileCubit>().logout(),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
           );

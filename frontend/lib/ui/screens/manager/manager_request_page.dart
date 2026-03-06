@@ -115,7 +115,6 @@ class ManagerRequestPage extends StatelessWidget {
     );
   }
 
-  // MANAGER view: only pending, with approve/reject buttons
   Widget _buildManagerView(BuildContext context, ManagerRequestsState state) {
     final pendingRequests = state.requests
         .where((r) => r.status == RequestStatus.PENDING)
@@ -129,22 +128,7 @@ class ManagerRequestPage extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: () => context.read<ManagerRequestsCubit>().loadAllRequests(),
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: displayItems.length,
-        itemBuilder: (context, index) {
-          final item = displayItems[index];
-          if (item is List<ScheduleRequestModel>) {
-            return _buildGroupedCard(context, item, showActions: true);
-          } else {
-            return _buildRequestCard(
-              context,
-              item as ScheduleRequestModel,
-              showActions: true,
-            );
-          }
-        },
-      ),
+      child: _buildResponsiveGrid(context, displayItems, showActions: true),
     );
   }
 
@@ -192,22 +176,77 @@ class ManagerRequestPage extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: () => context.read<ManagerRequestsCubit>().loadAllRequests(),
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: displayItems.length,
-        itemBuilder: (context, index) {
-          final item = displayItems[index];
-          if (item is List<ScheduleRequestModel>) {
-            return _buildGroupedCard(context, item, showActions: showActions);
-          } else {
-            return _buildRequestCard(
-              context,
-              item as ScheduleRequestModel,
-              showActions: showActions,
-            );
-          }
-        },
+      child: _buildResponsiveGrid(
+        context,
+        displayItems,
+        showActions: showActions,
       ),
+    );
+  }
+
+  Widget _buildResponsiveGrid(
+    BuildContext context,
+    List<dynamic> displayItems, {
+    required bool showActions,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= 800) {
+          // Calculate item width for 2 or 3 columns
+          final columnCount = constraints.maxWidth >= 1200 ? 3 : 2;
+          final spacing = 24.0;
+          final padding = 24.0;
+          final itemWidth =
+              (constraints.maxWidth -
+                  (padding * 2) -
+                  (spacing * (columnCount - 1))) /
+              columnCount;
+
+          return SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.all(padding),
+            child: Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              crossAxisAlignment: WrapCrossAlignment.start,
+              children: displayItems.map((item) {
+                return SizedBox(
+                  width: itemWidth,
+                  child: item is List<ScheduleRequestModel>
+                      ? _buildGroupedCard(
+                          context,
+                          item,
+                          showActions: showActions,
+                        )
+                      : _buildRequestCard(
+                          context,
+                          item as ScheduleRequestModel,
+                          showActions: showActions,
+                        ),
+                );
+              }).toList(),
+            ),
+          );
+        }
+
+        return ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16),
+          itemCount: displayItems.length,
+          itemBuilder: (context, index) {
+            final item = displayItems[index];
+            if (item is List<ScheduleRequestModel>) {
+              return _buildGroupedCard(context, item, showActions: showActions);
+            } else {
+              return _buildRequestCard(
+                context,
+                item as ScheduleRequestModel,
+                showActions: showActions,
+              );
+            }
+          },
+        );
+      },
     );
   }
 

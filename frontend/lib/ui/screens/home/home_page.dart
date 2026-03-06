@@ -47,36 +47,101 @@ class HomePage extends StatelessWidget {
           ),
           body: RefreshIndicator(
             onRefresh: () => context.read<HomeCubit>().loadData(),
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(state.user?.name ?? 'User'),
-                  _buildTodayStatus(state.todaySchedule),
-                  _buildQuickActions(context),
-                  _buildQuickStats(state),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                    child: Text(
-                      AppStrings.recentUpdates,
-                      style: TextStyle(
-                        fontSize: 22, // Increased from 18
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth >= 800;
+
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader(state.user?.name ?? 'User'),
+                      if (isWide)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  children: [
+                                    _buildTodayStatus(state.todaySchedule),
+                                    _buildQuickActions(context, isWide: true),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 24),
+                              Expanded(
+                                flex: 3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildQuickStats(state),
+                                    const Padding(
+                                      padding: EdgeInsets.only(
+                                        left: 20,
+                                        top: 15,
+                                      ),
+                                      child: Text(
+                                        AppStrings.recentUpdates,
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(50),
+                                        child: Text(
+                                          AppStrings.noRecentUpdates,
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      else
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildTodayStatus(state.todaySchedule),
+                            _buildQuickActions(context, isWide: false),
+                            _buildQuickStats(state),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 15,
+                              ),
+                              child: Text(
+                                AppStrings.recentUpdates,
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(50),
+                                child: Text(
+                                  AppStrings.noRecentUpdates,
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
                   ),
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(50),
-                      child: Text(
-                        AppStrings.noRecentUpdates,
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           ),
           floatingActionButton: () {
@@ -274,12 +339,12 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickActions(BuildContext context) {
+  Widget _buildQuickActions(BuildContext context, {bool isWide = false}) {
     final role = getIt<AuthService>().currentUser?.role ?? UserRole.INTERN;
     final isManagerOrHR = role == UserRole.MANAGER || role == UserRole.HR;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+      padding: EdgeInsets.fromLTRB(isWide ? 0 : 20, 24, isWide ? 0 : 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
