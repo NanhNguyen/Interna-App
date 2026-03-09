@@ -12,6 +12,7 @@ export class SchedulesController {
     constructor(private readonly schedulesService: SchedulesService) { }
 
     @Post()
+    @Roles(UserRole.INTERN, UserRole.EMPLOYEE)
     async create(@Request() req: any, @Body() data: any) {
         if (Array.isArray(data)) {
             return this.schedulesService.createMany(req.user._id, data);
@@ -56,11 +57,13 @@ export class SchedulesController {
     }
 
     @Delete('batch/:groupId')
+    @Roles(UserRole.INTERN, UserRole.EMPLOYEE)
     async removeBatch(@Request() req: any, @Param('groupId') groupId: string) {
         return this.schedulesService.removeBatch(groupId, req.user._id);
     }
 
     @Delete(':id')
+    @Roles(UserRole.INTERN, UserRole.EMPLOYEE)
     async remove(@Request() req: any, @Param('id') id: string) {
         return this.schedulesService.remove(id, req.user._id);
     }

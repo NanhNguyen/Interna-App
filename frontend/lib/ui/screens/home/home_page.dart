@@ -17,6 +17,9 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
+        final role = getIt<AuthService>().currentUser?.role ?? UserRole.INTERN;
+        final isManagerOrHR = role == UserRole.MANAGER || role == UserRole.HR;
+
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.blue.shade700,
@@ -25,7 +28,7 @@ class HomePage extends StatelessWidget {
               style: TextStyle(color: Colors.white),
             ),
             iconTheme: const IconThemeData(color: Colors.white),
-            actions: [const SizedBox(width: 10)],
+            actions: const [SizedBox(width: 10)],
           ),
           body: RefreshIndicator(
             onRefresh: () => context.read<HomeCubit>().loadData(),
@@ -38,7 +41,11 @@ class HomePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildHeader(state.user?.name ?? 'User', isWide: isWide),
+                      _buildHeader(
+                        state.user?.name ?? 'User',
+                        isWide: isWide,
+                        isManagerOrHR: isManagerOrHR,
+                      ),
                       if (isWide)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -150,7 +157,11 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(String name, {bool isWide = false}) {
+  Widget _buildHeader(
+    String name, {
+    bool isWide = false,
+    bool isManagerOrHR = false,
+  }) {
     if (isWide) {
       return Container(
         padding: const EdgeInsets.fromLTRB(40, 32, 24, 16),
@@ -168,7 +179,9 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Đây là tổng quan lịch trình và công việc của bạn.',
+              isManagerOrHR
+                  ? 'Đây là tổng quan các yêu cầu và lịch trình cần quản lý.'
+                  : 'Đây là tổng quan lịch trình và công việc của bạn.',
               style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
             ),
           ],
@@ -398,21 +411,26 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildQuickStats(HomeState state) {
+    final role = getIt<AuthService>().currentUser?.role ?? UserRole.INTERN;
+    final isManagerOrHR = role == UserRole.MANAGER || role == UserRole.HR;
+
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
           _buildStatCard(
-            AppStrings.pendingRequests,
+            isManagerOrHR ? 'Yêu cầu cần duyệt' : AppStrings.pendingRequests,
             state.pendingCount.toString(),
             Colors.orange,
           ),
-          const SizedBox(width: 16),
-          _buildStatCard(
-            AppStrings.totalRequests,
-            state.totalCount.toString(),
-            Colors.blue,
-          ),
+          if (!isManagerOrHR) ...[
+            const SizedBox(width: 16),
+            _buildStatCard(
+              AppStrings.totalRequests,
+              state.totalCount.toString(),
+              Colors.blue,
+            ),
+          ],
         ],
       ),
     );

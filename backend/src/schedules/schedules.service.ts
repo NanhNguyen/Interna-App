@@ -70,18 +70,30 @@ export class SchedulesService {
     }
 
     async findAll(user: any): Promise<ScheduleRequest[]> {
+        const allRequests = await this.scheduleRequestModel.find().populate('employee_id', 'name role managerId').exec();
+        const currentUserId = (user._id || user.id).toString();
+
         if (user.role === UserRole.HR) {
-            return this.scheduleRequestModel.find().populate('employee_id', 'name role managerId').exec();
+            // HR sees ALL Interns
+            return allRequests.filter(req => {
+                const owner = req.employee_id as any;
+                return owner && owner.role === UserRole.INTERN;
+            });
         }
 
-        // For Manager, fetch all and filter in-memory to avoid MongoDB ObjectID casting issues
-        const allRequests = await this.scheduleRequestModel.find().populate('employee_id', 'name role managerId').exec();
-        const currentManagerId = (user._id || user.id).toString();
+        if (user.role === UserRole.MANAGER) {
+            // Manager sees ONLY interns managed by them
+            return allRequests.filter(req => {
+                const owner = req.employee_id as any;
+                if (!owner || owner.role !== UserRole.INTERN || !owner.managerId) return false;
+                return owner.managerId.toString() === currentUserId;
+            });
+        }
 
+        // Default: return user's own schedules
         return allRequests.filter(req => {
             const intern = req.employee_id as any;
-            if (!intern || !intern.managerId) return false;
-            return intern.managerId.toString() === currentManagerId;
+            return intern && intern._id.toString() === currentUserId;
         });
     }
 
@@ -192,17 +204,30 @@ export class SchedulesService {
     }
 
     async findApproved(user: any): Promise<ScheduleRequest[]> {
+        const allApproved = await this.scheduleRequestModel.find({ status: RequestStatus.APPROVED }).populate('employee_id', 'name role managerId').exec();
+        const currentUserId = (user._id || user.id).toString();
+
         if (user.role === UserRole.HR) {
-            return this.scheduleRequestModel.find({ status: RequestStatus.APPROVED }).populate('employee_id', 'name role managerId').exec();
+            // HR sees ALL Interns
+            return allApproved.filter(req => {
+                const owner = req.employee_id as any;
+                return owner && owner.role === UserRole.INTERN;
+            });
         }
 
-        const allApproved = await this.scheduleRequestModel.find({ status: RequestStatus.APPROVED }).populate('employee_id', 'name role managerId').exec();
-        const currentManagerId = (user._id || user.id).toString();
+        if (user.role === UserRole.MANAGER) {
+            // Manager sees ONLY interns managed by them
+            return allApproved.filter(req => {
+                const owner = req.employee_id as any;
+                if (!owner || owner.role !== UserRole.INTERN || !owner.managerId) return false;
+                return owner.managerId.toString() === currentUserId;
+            });
+        }
 
+        // Default: return user's own approved schedules
         return allApproved.filter(req => {
             const intern = req.employee_id as any;
-            if (!intern || !intern.managerId) return false;
-            return intern.managerId.toString() === currentManagerId;
+            return intern && intern._id.toString() === currentUserId;
         });
     }
 }

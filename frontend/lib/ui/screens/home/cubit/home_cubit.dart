@@ -24,18 +24,20 @@ class HomeCubit extends BaseCubit<HomeState> {
           currentUser?.role == UserRole.HR;
 
       final results = await Future.wait([
-        _scheduleRepo.getMySchedules(),
+        if (!isManagerOrHR)
+          _scheduleRepo.getMySchedules()
+        else
+          Future.value(<ScheduleRequestModel>[]),
         _notificationRepo.getNotifications(),
-        if (isManagerOrHR) _scheduleRepo.getAllSchedules(),
+        if (isManagerOrHR)
+          _scheduleRepo.getAllSchedules()
+        else
+          Future.value(<ScheduleRequestModel>[]),
       ]);
 
       final mySchedules = results[0] as List<ScheduleRequestModel>;
       final notifications = results[1] as List<dynamic>;
-
-      List<ScheduleRequestModel> allSchedules = [];
-      if (isManagerOrHR && results.length > 2) {
-        allSchedules = results[2] as List<ScheduleRequestModel>;
-      }
+      final allSchedules = results[2] as List<ScheduleRequestModel>;
 
       // Manager/HR: count ALL pending; Intern: count their own pending
       final schedulesForCount = isManagerOrHR ? allSchedules : mySchedules;
