@@ -479,6 +479,19 @@ AI cần biết để tạo đúng pattern khi bạn yêu cầu thêm màn hình
 
 ---
 
+## 🤖 AI Integrations (MCP Servers)
+
+Project này hỗ trợ các Model Context Protocol (MCP) servers để tăng cường khả năng code của AI:
+
+### ⚡ Stitch MCP Server
+- **Service:** Google Stitch AI
+- **Tính năng:** Tự động tạo thiết kế giao diện (UI/UX), trích xuất thông tin style từ context, và sinh code Flutter/Web nhanh chóng.
+- **Cách dùng:** Khi cần design màn hình phức tạp hoặc beautify UI, hãy yêu cầu AI sử dụng công cụ từ Stitch MCP (nếu có sẵn trong session).
+
+---
+
+---
+
 ## ⚡ Chạy project
 
 ### Frontend (Flutter)
