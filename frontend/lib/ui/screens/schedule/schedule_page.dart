@@ -42,8 +42,8 @@ class _SchedulePageState extends State<SchedulePage> {
     final isManagerOrHR =
         _userRole == UserRole.MANAGER || _userRole == UserRole.HR;
 
-    return BlocProvider(
-      create: (context) => getIt<ScheduleCubit>()..loadSchedules(_userRole),
+    return BlocProvider.value(
+      value: getIt<ScheduleCubit>()..loadSchedules(_userRole),
       child: Scaffold(
         appBar: AppBar(
           title: Text(

@@ -2,8 +2,10 @@ import 'package:injectable/injectable.dart';
 import '../../../cubit/base_cubit.dart';
 import '../../../../data/constant/enums.dart';
 import '../../../../data/repo/schedule_request_repo.dart';
+import '../../../../data/service/auth_service.dart';
 import '../../../di/di_config.dart';
 import '../../home/cubit/home_cubit.dart';
+import '../../schedule/cubit/schedule_cubit.dart';
 import 'manager_requests_state.dart';
 
 @injectable
@@ -78,6 +80,10 @@ class ManagerRequestsCubit extends BaseCubit<ManagerRequestsState> {
         // Only update requests list, preserve actionResult
         emit(state.copyWith(status: BaseStatus.success, requests: res));
         getIt<HomeCubit>().loadData();
+
+        final userRole =
+            getIt<AuthService>().currentUser?.role ?? UserRole.INTERN;
+        getIt<ScheduleCubit>().loadSchedules(userRole);
       } catch (_) {}
     });
   }

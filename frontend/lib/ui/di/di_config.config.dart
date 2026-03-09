@@ -94,9 +94,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i1072.AuthRepo>(
       () => _i211.AuthRepoImpl(gh<_i161.AuthApi>(), gh<_i220.TokenStorage>()),
     );
-    gh.factory<_i674.ScheduleCubit>(
-      () => _i674.ScheduleCubit(gh<_i611.ScheduleRequestRepo>()),
-    );
     gh.factory<_i500.ScheduleFormCubit>(
       () => _i500.ScheduleFormCubit(gh<_i611.ScheduleRequestRepo>()),
     );
@@ -105,6 +102,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i359.ManagerRequestsCubit>(
       () => _i359.ManagerRequestsCubit(gh<_i611.ScheduleRequestRepo>()),
+    );
+    gh.lazySingleton<_i674.ScheduleCubit>(
+      () => _i674.ScheduleCubit(gh<_i611.ScheduleRequestRepo>()),
     );
     gh.lazySingleton<_i258.AuthService>(
       () => _i258.AuthService(

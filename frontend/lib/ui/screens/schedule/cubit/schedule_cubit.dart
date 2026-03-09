@@ -5,7 +5,7 @@ import '../../../../data/repo/schedule_request_repo.dart';
 import '../../../../data/model/schedule_request_model.dart';
 import 'schedule_state.dart';
 
-@injectable
+@lazySingleton
 class ScheduleCubit extends BaseCubit<ScheduleState> {
   final ScheduleRequestRepo _scheduleRepo;
 
