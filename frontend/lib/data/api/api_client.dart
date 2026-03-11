@@ -10,7 +10,7 @@ class ApiClient {
   late final Dio dio;
 
   static String get baseUrl {
-    return 'https://shiftflow-app-backend.onrender.com/';
+    return 'https://shiftly-app-backend.onrender.com/';
     // return 'http://localhost:3000/';
   }
 

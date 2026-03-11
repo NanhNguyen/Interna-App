@@ -424,7 +424,7 @@ flutter run
 Tìm file cấu hình Dio (thường trong `di_config.config.dart` hoặc repo impl):
 ```dart
 // Đổi thành địa chỉ backend của bạn
-const baseUrl = 'https://shiftflow-app-backend.onrender.com/';
+const baseUrl = 'https://shiftly-app-backend.onrender.com/';
 // Trên thiết bị Android emulator:
 const baseUrl = 'http://10.0.2.2:3000';
 // Trên thiết bị thật:
