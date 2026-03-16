@@ -32,5 +32,11 @@ class AppRouter extends RootStackRouter {
       path: '/notifications',
       guards: [AuthGuard()],
     ),
+    AutoRoute(page: MealRoute.page, path: '/meals', guards: [AuthGuard()]),
+    AutoRoute(
+      page: AnnouncementRoute.page,
+      path: '/announcements',
+      guards: [AuthGuard()],
+    ),
   ];
 }

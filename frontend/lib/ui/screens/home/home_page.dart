@@ -340,6 +340,13 @@ class HomePage extends StatelessWidget {
                 : [
                     _buildActionItem(
                       context,
+                      'Đặt cơm',
+                      Icons.rice_bowl,
+                      Colors.deepOrange,
+                      tabIndex: 1, // MealPage is at index 1 for intern
+                    ),
+                    _buildActionItem(
+                      context,
                       AppStrings.recurringLeave,
                       Icons.repeat,
                       Colors.blue,
@@ -363,7 +370,8 @@ class HomePage extends StatelessWidget {
                       AppStrings.profile,
                       Icons.person,
                       Colors.green,
-                      tabIndex: 3,
+                      tabIndex:
+                          5, // Profile is at index 5 for intern (0=Home,1=Meal,2=Schedule,3=Status,4=Notif,5=Profile)
                     ),
                   ],
           ),

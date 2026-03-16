@@ -11,6 +11,8 @@ import '../profile/profile_page.dart';
 import '../accounts/accounts_page.dart';
 import '../manager/manager_request_page.dart';
 import '../notifications/notification_page.dart';
+import '../meal/meal_page.dart';
+import '../announcements/announcement_page.dart';
 import '../schedule/cubit/schedule_cubit.dart';
 import 'cubit/main_cubit.dart';
 import 'cubit/main_state.dart';
@@ -313,6 +315,7 @@ class _MainPageState extends State<MainPage> {
           const HomePage(),
           const SchedulePage(),
           const AccountsPage(),
+          const AnnouncementPage(),
           const NotificationPage(),
           const ProfilePage(),
         ];
@@ -320,6 +323,7 @@ class _MainPageState extends State<MainPage> {
       case UserRole.EMPLOYEE:
         return [
           const HomePage(),
+          const MealPage(),
           const SchedulePage(),
           const StatusPage(),
           const NotificationPage(),
@@ -349,6 +353,11 @@ class _MainPageState extends State<MainPage> {
             activeIcon: Icon(Icons.group_add),
             label: 'Tài khoản',
           ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.campaign_outlined),
+            activeIcon: Icon(Icons.campaign),
+            label: 'Thông báo',
+          ),
           BottomNavigationBarItem(
             icon: _withBadge(
               Icons.notifications_outlined,
@@ -374,6 +383,11 @@ class _MainPageState extends State<MainPage> {
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
             label: AppStrings.home,
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.rice_bowl_outlined),
+            activeIcon: Icon(Icons.rice_bowl),
+            label: 'Đặt cơm',
           ),
           const BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month_outlined),
@@ -414,7 +428,7 @@ class _MainPageState extends State<MainPage> {
       case UserRole.HR:
         return index == 1;
       default: // INTERN
-        return index == 1;
+        return index == 2; // Shifted: 0=Home, 1=Meal, 2=Schedule
     }
   }
 
@@ -424,9 +438,9 @@ class _MainPageState extends State<MainPage> {
       case UserRole.MANAGER:
         return 3;
       case UserRole.HR:
-        return 2;
+        return 4; // 0=Home,1=Schedule,2=Accounts,3=Announcements,4=Notifications
       default: // INTERN
-        return 3;
+        return 4; // 0=Home,1=Meal,2=Schedule,3=Status,4=Notifications
     }
   }
 
