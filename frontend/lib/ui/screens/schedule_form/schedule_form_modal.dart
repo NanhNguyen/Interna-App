@@ -341,7 +341,7 @@ class ScheduleFormModal extends StatelessWidget {
                 label: AppStrings.adhocLeave,
                 icon: Icons.event_note,
                 selected: !isRecurring,
-                color: Colors.orange.shade700,
+                color: color,
                 showIcon: showIcons,
                 onTap: () => context.read<ScheduleFormCubit>().updateField(
                   isRecurring: false,
