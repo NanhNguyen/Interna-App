@@ -274,7 +274,7 @@ class _MealPageState extends State<MealPage>
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
-                      color: Color(0xFF7678ED),
+                      color: Colors.white, // Changed from indigo
                     ),
                   ),
                 ),
@@ -335,7 +335,7 @@ class _MealPageState extends State<MealPage>
       borderColor = const Color(0xFF7678ED);
     } else if (isToday) {
       bgColor = const Color(0xFF7678ED);
-      dayNumColor = const Color(0xFF7678ED);
+      dayNumColor = Colors.white; // Changed from indigo
       borderColor = const Color(0xFF7678ED);
     } else if (isWeekend) {
       bgColor = Colors.grey.shade50;
@@ -370,7 +370,7 @@ class _MealPageState extends State<MealPage>
             label: 'Trưa',
             count: count,
             color: const Color(0xFF7678ED),
-            bgColor: const Color(0xFF7678ED),
+            bgColor: const Color(0xFF7678ED).withOpacity(0.12), // Added opacity for contrast
             isSelected: isSelected,
           ),
         ],
@@ -553,7 +553,7 @@ class _MealPageState extends State<MealPage>
               child: Text(
                 name.isNotEmpty ? name[0].toUpperCase() : '?',
                 style: const TextStyle(
-                  color: Color(0xFF7678ED),
+                  color: Colors.white, // Changed from indigo
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -700,7 +700,7 @@ class _MealPageState extends State<MealPage>
                   ),
                   child: const Icon(
                     Icons.rice_bowl,
-                    color: Color(0xFF7678ED),
+                    color: Colors.white, // Changed from indigo
                     size: 28,
                   ),
                 ),
@@ -782,7 +782,7 @@ class _MealPageState extends State<MealPage>
               ),
               child: Icon(
                 isRecurring ? Icons.repeat : Icons.event,
-                color: const Color(0xFF7678ED),
+                color: Colors.white, // Changed from indigo
               ),
             ),
             const SizedBox(width: 14),

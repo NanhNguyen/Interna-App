@@ -543,7 +543,7 @@ class _SchedulePageState extends State<SchedulePage> {
       borderColor = const Color(0xFF7678ED);
     } else if (isToday) {
       bgColor = const Color(0xFF7678ED);
-      dayNumColor = const Color(0xFF7678ED);
+      dayNumColor = Colors.white; // Changed from Color(0xFF7678ED) to white for contrast
       borderColor = const Color(0xFF7678ED);
     } else if (isWeekend) {
       bgColor = Colors.grey.shade50;
@@ -599,7 +599,7 @@ class _SchedulePageState extends State<SchedulePage> {
               label: 'SA',
               count: hasSchedules ? morningCount : 0,
               color: const Color(0xFF7678ED),
-              bgColor: const Color(0xFF7678ED),
+              bgColor: const Color(0xFF7678ED).withOpacity(0.12),
               isSelected: isSelected,
               isEmpty: !hasSchedules,
             ),

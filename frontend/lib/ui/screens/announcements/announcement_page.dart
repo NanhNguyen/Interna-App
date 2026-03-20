@@ -245,7 +245,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                   child: Text(
                     authorLetter,
                     style: const TextStyle(
-                      color: Color(0xFF7678ED),
+                      color: Colors.white, // Changed from indigo
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -313,7 +313,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                         Icon(
                           Icons.campaign,
                           size: 12,
-                          color: const Color(0xFF7678ED),
+                          color: Colors.white, // Changed from indigo
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -321,7 +321,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF7678ED),
+                            color: Colors.white, // Changed from indigo
                           ),
                         ),
                       ],
@@ -449,7 +449,7 @@ class _ComposeSheetState extends State<_ComposeSheet> {
             const SizedBox(height: 16),
             Row(
               children: [
-                Icon(Icons.campaign, color: Colors.indigo.shade700),
+                Icon(Icons.campaign, color: const Color(0xFF7678ED)),
                 const SizedBox(width: 8),
                 const Text(
                   'Soạn thông báo HR',
