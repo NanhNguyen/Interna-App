@@ -60,7 +60,10 @@ class _SchedulePageState extends State<SchedulePage> {
             isManagerOrHR
                 ? AppStrings.staffSchedule
                 : AppStrings.myWorkSchedule,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           elevation: 0,
           centerTitle: true,
@@ -195,7 +198,7 @@ class _SchedulePageState extends State<SchedulePage> {
                     titleTextStyle: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF7678ED),
+                      color: Color(0xFF7678ED),
                     ),
                   ),
                   daysOfWeekHeight: 45,
@@ -374,7 +377,7 @@ class _SchedulePageState extends State<SchedulePage> {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF7678ED),
+                color: Color(0xFF7678ED),
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -482,9 +485,9 @@ class _SchedulePageState extends State<SchedulePage> {
         decoration: InputDecoration(
           hintText: 'Tìm theo tên...',
           hintStyle: TextStyle(fontSize: 16, color: Colors.grey.shade400),
-          prefixIcon: Icon(
+          prefixIcon: const Icon(
             Icons.person_search_rounded,
-            color: const Color(0xFF7678ED),
+            color: Color(0xFF7678ED),
             size: 24,
           ),
           suffixIcon: _filterEmployee.isNotEmpty
@@ -513,7 +516,7 @@ class _SchedulePageState extends State<SchedulePage> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: const Color(0xFF7678ED)   , width: 1.5),
+            borderSide: const BorderSide(color: Color(0xFF7678ED), width: 1.5),
           ),
         ),
       ),
@@ -561,7 +564,8 @@ class _SchedulePageState extends State<SchedulePage> {
       borderColor = const Color(0xFF7678ED);
     } else if (isToday) {
       bgColor = const Color(0xFF7678ED);
-      dayNumColor = Colors.white; // Changed from Color(0xFF7678ED) to white for contrast
+      dayNumColor =
+          Colors.white; // Changed from Color(0xFF7678ED) to white for contrast
       borderColor = const Color(0xFF7678ED);
     } else if (isWeekend) {
       bgColor = Colors.grey.shade50;
@@ -897,7 +901,8 @@ class _SchedulePageState extends State<SchedulePage> {
       itemBuilder: (context, index) {
         final req = filteredEvents[index];
         final isLeave = req.type == ScheduleType.LEAVE;
-        final shiftColor = _getColorForShift(req.shift) ?? const Color(0xFF7678ED);
+        final shiftColor =
+            _getColorForShift(req.shift) ?? const Color(0xFF7678ED);
         final statusColor = req.status == RequestStatus.APPROVED
             ? Colors.green
             : (req.status == RequestStatus.PENDING
