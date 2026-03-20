@@ -98,7 +98,7 @@ class _MainPageState extends State<MainPage> {
                                     Icon(
                                       Icons.calendar_month,
                                       size: 32,
-                                      color: Colors.blue,
+                                      color: const Color(0xFF7678ED),
                                     ),
                                     SizedBox(width: 12),
                                     Text(
@@ -106,7 +106,7 @@ class _MainPageState extends State<MainPage> {
                                       style: TextStyle(
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.blue,
+                                        color: const Color(0xFF7678ED),
                                       ),
                                     ),
                                   ],
@@ -424,6 +424,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   Color _getColorForRole(UserRole role) {
-    return Colors.blue.shade700;
+    return const Color(0xFF7678ED);
   }
 }

@@ -25,8 +25,8 @@ class App extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          primary: Colors.blue.shade700,
+          seedColor: const Color(0xFF7678ED),
+          primary: const Color(0xFF7678ED),
           onPrimary: Colors.white,
         ),
         appBarTheme: AppBarTheme(
@@ -43,7 +43,7 @@ class App extends StatelessWidget {
           ),
           iconTheme: const IconThemeData(color: Colors.black87, size: 28),
         ),
-        iconTheme: IconThemeData(color: Colors.blue.shade700, size: 26),
+        iconTheme: IconThemeData(color: const Color(0xFF7678ED), size: 26),
         textTheme: GoogleFonts.interTextTheme(
           const TextTheme(
             bodyLarge: TextStyle(fontSize: 20), // Increased from 18

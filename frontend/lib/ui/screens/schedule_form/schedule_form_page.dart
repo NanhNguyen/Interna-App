@@ -46,7 +46,7 @@ class ScheduleFormPage extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          final color = Colors.blue.shade700; // Consistent blue
+          final color = const Color(0xFF7678ED); // Consistent blue
           final isRecurring = state.isRecurring;
 
           return Scaffold(

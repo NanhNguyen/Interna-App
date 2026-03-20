@@ -36,7 +36,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
       child: Scaffold(
         backgroundColor: const Color(0xFFF0F2F5),
         appBar: AppBar(
-          backgroundColor: Colors.blue.shade700,
+          backgroundColor: const Color(0xFF7678ED),
           foregroundColor: Colors.white,
           title: const Text(
             'Bản tin HR',
@@ -95,8 +95,8 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  Colors.blue.shade700,
-                                  Colors.blue.shade500,
+                                  const Color(0xFF7678ED),
+                                  const Color(0xFF7678ED),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -197,7 +197,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
         floatingActionButton: _isHR
             ? FloatingActionButton.extended(
                 onPressed: () => _showComposeSheet(context),
-                backgroundColor: Colors.blue.shade700,
+                backgroundColor: const Color(0xFF7678ED),
                 foregroundColor: Colors.white,
                 icon: const Icon(Icons.campaign),
                 label: const Text(
@@ -241,11 +241,11 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
               children: [
                 CircleAvatar(
                   radius: 22,
-                  backgroundColor: Colors.blue.shade100,
+                  backgroundColor: const Color(0xFF7678ED),
                   child: Text(
                     authorLetter,
-                    style: TextStyle(
-                      color: Colors.blue.shade700,
+                    style: const TextStyle(
+                      color: Color(0xFF7678ED),
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -304,7 +304,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
+                      color: const Color(0xFF7678ED),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -313,7 +313,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                         Icon(
                           Icons.campaign,
                           size: 12,
-                          color: Colors.blue.shade700,
+                          color: const Color(0xFF7678ED),
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -321,7 +321,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue.shade700,
+                            color: const Color(0xFF7678ED),
                           ),
                         ),
                       ],
@@ -513,7 +513,7 @@ class _ComposeSheetState extends State<_ComposeSheet> {
                             ),
                           ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700,
+                      backgroundColor: const Color(0xFF7678ED),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),

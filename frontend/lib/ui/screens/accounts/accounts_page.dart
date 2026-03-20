@@ -217,7 +217,7 @@ class _AccountsPageState extends State<AccountsPage> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.blue.shade700,
+                  backgroundColor: const Color(0xFF7678ED),
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),

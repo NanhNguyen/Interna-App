@@ -57,7 +57,7 @@ class ScheduleFormModal extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          final color = Colors.blue.shade700;
+          final color = const Color(0xFF7678ED);
           final isRecurring = state.isRecurring;
           final isLoading = state.status == BaseStatus.loading;
 

@@ -82,7 +82,7 @@ class _NotificationPageState extends State<NotificationPage> {
             AppStrings.notifications,
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
-          backgroundColor: Colors.blue.shade700,
+          backgroundColor: const Color(0xFF7678ED),
           foregroundColor: Colors.white,
           elevation: 0.5,
         ),
@@ -319,13 +319,13 @@ class _NotificationPageState extends State<NotificationPage> {
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: Colors.blue.shade100,
+                      backgroundColor: const Color(0xFFE8E9FD),
                       child: Text(
                         avatarLetter,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade700,
+                          color: const Color(0xFF7678ED),
                         ),
                       ),
                     ),
@@ -435,13 +435,13 @@ class _NotificationPageState extends State<NotificationPage> {
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: Colors.blue.shade100,
+                      backgroundColor: const Color(0xFFE8E9FD),
                       child: Text(
                         avatarLetter,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade700,
+                          color: const Color(0xFF7678ED),
                         ),
                       ),
                     ),
@@ -613,7 +613,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         style: TextStyle(
                           fontSize: 14,
                           color: isUnread
-                              ? Colors.blue.shade600
+                              ? const Color(0xFF7678ED)
                               : Colors.grey.shade400,
                           fontWeight: isUnread
                               ? FontWeight.bold
@@ -679,13 +679,13 @@ class _NotificationPageState extends State<NotificationPage> {
   Color _getIconColor(String type) {
     switch (type) {
       case 'REQUEST_CREATED':
-        return Colors.blue;
+        return const Color(0xFF7678ED);
       case 'REQUEST_APPROVED':
         return Colors.green;
       case 'REQUEST_REJECTED':
         return Colors.red;
       case 'ANNOUNCEMENT':
-        return Colors.blue;
+        return const Color(0xFF7678ED);
       default:
         return Colors.grey;
     }

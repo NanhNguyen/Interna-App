@@ -70,7 +70,7 @@ class _SchedulePageState extends State<SchedulePage> {
                 // Global search bar — filters both tabs simultaneously
                 if (isManagerOrHR) _buildSearchBar(),
                 Container(
-                  color: Colors.blue,
+                  color: const Color(0xFF7678ED),
                   child: const TabBar(
                     indicatorColor: Colors.white,
                     indicatorWeight: 3,
@@ -177,7 +177,7 @@ class _SchedulePageState extends State<SchedulePage> {
                     titleTextStyle: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent,
+                      color: const Color(0xFF7678ED),
                     ),
                   ),
                   daysOfWeekHeight: 45,
@@ -356,7 +356,7 @@ class _SchedulePageState extends State<SchedulePage> {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
+                color: const Color(0xFF7678ED),
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -466,7 +466,7 @@ class _SchedulePageState extends State<SchedulePage> {
           hintStyle: TextStyle(fontSize: 16, color: Colors.grey.shade400),
           prefixIcon: Icon(
             Icons.person_search_rounded,
-            color: Colors.blue.shade500,
+            color: const Color(0xFF7678ED),
             size: 24,
           ),
           suffixIcon: _filterEmployee.isNotEmpty
@@ -495,7 +495,7 @@ class _SchedulePageState extends State<SchedulePage> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.blue.shade400, width: 1.5),
+            borderSide: BorderSide(color: const Color(0xFF7678ED)   , width: 1.5),
           ),
         ),
       ),
@@ -538,13 +538,13 @@ class _SchedulePageState extends State<SchedulePage> {
     Color bgColor;
     Color borderColor;
     if (isSelected) {
-      bgColor = Colors.blue.shade700;
+      bgColor = const Color(0xFF7678ED);
       dayNumColor = Colors.white;
-      borderColor = Colors.blue.shade700;
+      borderColor = const Color(0xFF7678ED);
     } else if (isToday) {
-      bgColor = Colors.blue.shade50;
-      dayNumColor = Colors.blue.shade800;
-      borderColor = Colors.blue.shade300;
+      bgColor = const Color(0xFF7678ED);
+      dayNumColor = const Color(0xFF7678ED);
+      borderColor = const Color(0xFF7678ED);
     } else if (isWeekend) {
       bgColor = Colors.grey.shade50;
       dayNumColor = Colors.grey.shade400;
@@ -598,8 +598,8 @@ class _SchedulePageState extends State<SchedulePage> {
             _buildShiftBadge(
               label: 'SA',
               count: hasSchedules ? morningCount : 0,
-              color: Colors.blue.shade600,
-              bgColor: Colors.blue.shade50,
+              color: const Color(0xFF7678ED),
+              bgColor: const Color(0xFF7678ED),
               isSelected: isSelected,
               isEmpty: !hasSchedules,
             ),
@@ -708,7 +708,7 @@ class _SchedulePageState extends State<SchedulePage> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
                 decoration: BoxDecoration(
-                  color: Colors.blue, // Changed from red
+                  color: const Color(0xFF7678ED), // Changed from red
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -722,9 +722,9 @@ class _SchedulePageState extends State<SchedulePage> {
                 ),
               ),
             ] else
-              _dot(Colors.blue), // Changed from red
+              _dot(const Color(0xFF7678ED)), // Changed from red
           ],
-          if (hasWork) _dot(Colors.blue.shade300),
+          if (hasWork) _dot(const Color(0xFF7678ED)),
         ],
       ),
     );
@@ -879,7 +879,7 @@ class _SchedulePageState extends State<SchedulePage> {
       itemBuilder: (context, index) {
         final req = filteredEvents[index];
         final isLeave = req.type == ScheduleType.LEAVE;
-        final shiftColor = _getColorForShift(req.shift) ?? Colors.blue;
+        final shiftColor = _getColorForShift(req.shift) ?? const Color(0xFF7678ED);
         final statusColor = req.status == RequestStatus.APPROVED
             ? Colors.green
             : (req.status == RequestStatus.PENDING
@@ -991,7 +991,7 @@ class _SchedulePageState extends State<SchedulePage> {
         shift.toUpperCase() == 'CHIỀU') {
       return Colors.deepOrange.shade700;
     } else if (shift == AppStrings.allDay || shift.toUpperCase() == 'CẢ NGÀY') {
-      return Colors.blue.shade900;
+      return const Color(0xFF7678ED);
     }
     return null;
   }

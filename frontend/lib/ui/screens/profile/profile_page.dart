@@ -73,7 +73,7 @@ class ProfilePage extends StatelessWidget {
                                   icon: const Icon(
                                     Icons.edit,
                                     size: 20,
-                                    color: Colors.blue,
+                                    color: const Color(0xFF7678ED),
                                   ),
                                   onPressed: () => _showEditNameDialog(
                                     context,
@@ -97,13 +97,13 @@ class ProfilePage extends StatelessWidget {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.blue.withOpacity(0.1),
+                                color: const Color(0xFF7678ED).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
                                 user?.role.displayName ?? 'Role',
                                 style: const TextStyle(
-                                  color: Colors.blue,
+                                  color: const Color(0xFF7678ED),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
@@ -140,10 +140,10 @@ class ProfilePage extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 60,
-          backgroundColor: Colors.blue.shade100,
+          backgroundColor: const Color(0xFF7678ED),
           backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
           child: avatarUrl == null
-              ? const Icon(Icons.person, size: 60, color: Colors.blue)
+              ? const Icon(Icons.person, size: 60, color: const Color(0xFF7678ED))
               : null,
         ),
         Positioned(
@@ -154,7 +154,7 @@ class ProfilePage extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: const BoxDecoration(
-                color: Colors.blue,
+                color: const Color(0xFF7678ED),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -189,12 +189,12 @@ class ProfilePage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ListTile(
-              leading: const Icon(Icons.photo_library, color: Colors.blue),
+              leading: const Icon(Icons.photo_library, color: const Color(0xFF7678ED)),
               title: const Text('Thư viện ảnh'),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
             ListTile(
-              leading: const Icon(Icons.camera_alt, color: Colors.blue),
+              leading: const Icon(Icons.camera_alt, color: const Color(0xFF7678ED)),
               title: const Text('Chụp ảnh mới'),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
@@ -333,7 +333,7 @@ class ProfilePage extends StatelessWidget {
       onTap: onTap,
       leading: Icon(
         icon,
-        color: isDestructive ? Colors.red : Colors.blue,
+        color: isDestructive ? Colors.red : const Color(0xFF7678ED),
         size: 30,
       ), // Increased
       title: Text(

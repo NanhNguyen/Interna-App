@@ -264,10 +264,10 @@ class _ManagerRequestPageState extends State<ManagerRequestPage> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: _sortOrder,
-          icon: const Icon(Icons.sort, color: Colors.blue),
+          icon: const Icon(Icons.sort, color: const Color(0xFF7678ED)),
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.blue,
+            color: const Color(0xFF7678ED),
           ),
           onChanged: (String? newValue) {
             if (newValue != null) {
@@ -358,7 +358,7 @@ class _ManagerRequestPageState extends State<ManagerRequestPage> {
   }) {
     final first = group.first;
     final isRecurring = first.isRecurring;
-    final color = Colors.blue;
+    final color = const Color(0xFF7678ED);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),

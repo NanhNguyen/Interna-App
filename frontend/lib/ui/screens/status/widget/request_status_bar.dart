@@ -17,7 +17,7 @@ class RequestStatusBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: const Color(0xFF7678ED),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(

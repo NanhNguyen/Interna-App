@@ -21,7 +21,7 @@ class StatusPage extends StatelessWidget {
         length: 3,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.blue.shade700,
+            backgroundColor: const Color(0xFF7678ED),
             elevation: 0,
             title: const Text(
               AppStrings.myRequestStatus,
@@ -169,7 +169,7 @@ class StatusPage extends StatelessWidget {
         ), // Increased from 14
         leading: Icon(
           first.isRecurring ? Icons.repeat : Icons.event_note,
-          color: Colors.blue,
+          color: const Color(0xFF7678ED),
           size: 28, // Increased
         ),
         trailing: isPending

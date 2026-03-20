@@ -147,9 +147,9 @@ class _BannerCard extends StatelessWidget {
       case 'REQUEST_REJECTED':
         return Colors.red.shade600;
       case 'REQUEST_CREATED':
-        return Colors.blue.shade600;
+        return const Color(0xFF7678ED);
       default:
-        return Colors.blue.shade600;
+        return const Color(0xFF7678ED);
     }
   }
 
@@ -171,7 +171,7 @@ class _BannerCard extends StatelessWidget {
       case 'REQUEST_REJECTED':
         return Colors.red.shade200;
       default:
-        return Colors.blue.shade200;
+        return const Color(0xFF7678ED);
     }
   }
 

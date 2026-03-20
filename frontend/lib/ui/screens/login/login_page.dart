@@ -64,7 +64,7 @@ class _LoginPageViewState extends State<LoginPageView> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.blue.shade900,
+        backgroundColor: const Color(0xFF7678ED),
         body: Stack(
           children: [
             // Static Background with RepaintBoundary to prevent expensive gradient re-paints
@@ -100,7 +100,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                             const Icon(
                               Icons.calendar_month,
                               size: 64,
-                              color: Colors.blue,
+                              color: const Color(0xFF7678ED),
                             ),
                             const SizedBox(height: 16),
                             const Text(
@@ -108,7 +108,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.blue,
+                                color: const Color(0xFF7678ED),
                               ),
                             ),
                             const SizedBox(height: 32),
@@ -168,7 +168,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                                         ? null
                                         : () => _handleLogin(context),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue,
+                                      backgroundColor: const Color(0xFF7678ED),
                                       foregroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),

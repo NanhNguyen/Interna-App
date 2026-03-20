@@ -20,7 +20,7 @@ class RequestItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLeave = request.type == ScheduleType.LEAVE;
-    final typeColor = isLeave ? Colors.red : Colors.blue;
+    final typeColor = isLeave ? Colors.red : const Color(0xFF7678ED);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
