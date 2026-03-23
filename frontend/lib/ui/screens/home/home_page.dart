@@ -9,6 +9,7 @@ import '../schedule_form/schedule_form_modal.dart';
 import 'cubit/home_cubit.dart';
 import 'cubit/home_state.dart';
 import '../../../resource/app_strings.dart';
+import '../accounts/create_account_modal.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -375,7 +376,7 @@ class HomePage extends StatelessWidget {
           AppStrings.accounts,
           Icons.people,
           Colors.purple,
-          tabIndex: 3,
+          onTap: () => showCreateAccountModal(context),
         ),
         _buildActionItem(
           context,

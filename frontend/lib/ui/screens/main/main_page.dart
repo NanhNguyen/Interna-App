@@ -8,7 +8,6 @@ import '../home/home_page.dart';
 import '../schedule/schedule_page.dart';
 import '../status/status_page.dart';
 import '../profile/profile_page.dart';
-import '../accounts/accounts_page.dart';
 import '../manager/manager_request_page.dart';
 import '../notifications/notification_page.dart';
 import '../meal/meal_page.dart';
@@ -333,7 +332,6 @@ class _MainPageState extends State<MainPage> {
           const HomePage(),
           const MealPage(),
           const SchedulePage(),
-          const AccountsPage(),
           const AnnouncementPage(),
           const NotificationPage(),
           const ProfilePage(),
@@ -396,6 +394,9 @@ class _MainPageState extends State<MainPage> {
     if (_userRole == UserRole.MANAGER) {
       if (navIndex == 2) return 3; // Notifications
       if (navIndex == 3) return 4; // Profile
+    } else if (_userRole == UserRole.HR) {
+      if (navIndex == 2) return 4; // Notifications
+      if (navIndex == 3) return 5; // Profile
     } else {
       if (navIndex == 2) return 5; // Notifications
       if (navIndex == 3) return 6; // Profile
@@ -409,6 +410,9 @@ class _MainPageState extends State<MainPage> {
     if (_userRole == UserRole.MANAGER) {
       if (pageIndex == 3) return 2; // Notifications
       if (pageIndex == 4) return 3; // Profile
+    } else if (_userRole == UserRole.HR) {
+      if (pageIndex == 4) return 2; // Notifications
+      if (pageIndex == 5) return 3; // Profile
     } else {
       if (pageIndex == 5) return 2; // Notifications
       if (pageIndex == 6) return 3; // Profile
@@ -420,7 +424,9 @@ class _MainPageState extends State<MainPage> {
 
   int _getNotificationIndex([UserRole? role]) {
     final r = role ?? _userRole;
-    return (r == UserRole.MANAGER) ? 3 : 5;
+    if (r == UserRole.MANAGER) return 3;
+    if (r == UserRole.HR) return 4;
+    return 5;
   }
 
   Color _getColorForRole(UserRole role) {
