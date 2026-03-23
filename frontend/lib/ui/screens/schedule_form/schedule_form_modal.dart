@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
 import '../../di/di_config.dart';
 import '../../../data/constant/enums.dart';
 import 'cubit/schedule_form_cubit.dart';
@@ -70,11 +71,11 @@ class ScheduleFormModal extends StatelessWidget {
               horizontal: 20,
               vertical: 24,
             ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: 480,
-                maxHeight: MediaQuery.of(context).size.height * 0.85,
-              ),
+    child: ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: 480,
+        maxHeight: MediaQuery.of(context).size.height * 0.9,
+      ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -130,11 +131,8 @@ class ScheduleFormModal extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Toggle recurring / adhoc
                           _buildToggleRow(context, state, color),
                           const SizedBox(height: 24),
-
-                          // Date section
                           _buildSectionTitle(
                             isRecurring
                                 ? AppStrings.recurringDuration
@@ -149,10 +147,9 @@ class ScheduleFormModal extends StatelessWidget {
                                     label: AppStrings.start,
                                     date: state.startDate ?? DateTime.now(),
                                     color: color,
-                                    onTap: () => _showScrollingDatePicker(
+                                    onTap: () => _pickDateResponsive(
                                       context,
-                                      initialDate:
-                                          state.startDate ?? DateTime.now(),
+                                      initialDate: state.startDate ?? DateTime.now(),
                                       onChanged: (date) => context
                                           .read<ScheduleFormCubit>()
                                           .updateField(startDate: date),
@@ -160,11 +157,7 @@ class ScheduleFormModal extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(width: 6),
-                                const Icon(
-                                  Icons.arrow_forward,
-                                  color: Colors.grey,
-                                  size: 14,
-                                ),
+                                const Icon(Icons.arrow_forward, color: Colors.grey, size: 14),
                                 const SizedBox(width: 6),
                                 Expanded(
                                   child: _buildDateCard(
@@ -172,10 +165,9 @@ class ScheduleFormModal extends StatelessWidget {
                                     label: AppStrings.until,
                                     date: state.endDate ?? DateTime.now(),
                                     color: color,
-                                    onTap: () => _showScrollingDatePicker(
+                                    onTap: () => _pickDateResponsive(
                                       context,
-                                      initialDate:
-                                          state.endDate ?? DateTime.now(),
+                                      initialDate: state.endDate ?? DateTime.now(),
                                       minimumDate: state.startDate,
                                       onChanged: (date) => context
                                           .read<ScheduleFormCubit>()
@@ -188,15 +180,11 @@ class ScheduleFormModal extends StatelessWidget {
                           else
                             _buildMultiDatePicker(context, state, color),
                           const SizedBox(height: 24),
-
-                          // Weekday selector (recurring only)
                           if (isRecurring) ...[
                             _buildSectionTitle(AppStrings.repeatOn),
                             _buildWeekdaySelector(context, state, color),
                             const SizedBox(height: 24),
                           ],
-
-                          // Shift dropdown
                           _buildSectionTitle(AppStrings.shift),
                           _buildGlassDropdown(
                             value: state.shift,
@@ -210,36 +198,24 @@ class ScheduleFormModal extends StatelessWidget {
                                 .updateField(shift: v),
                           ),
                           const SizedBox(height: 24),
-
-                          // Description
                           _buildSectionTitle(AppStrings.descriptionLabel),
                           TextField(
                             onChanged: (v) => context
                                 .read<ScheduleFormCubit>()
                                 .updateField(description: v),
                             maxLines: 2,
-                            textAlignVertical: TextAlignVertical.center,
                             decoration: InputDecoration(
                               hintText: AppStrings.addNotes,
-                              prefixIcon: const Padding(
-                                padding: EdgeInsets.only(bottom: 8.0),
-                                child: Icon(Icons.notes_rounded),
-                              ),
+                              prefixIcon: const Icon(Icons.notes_rounded),
                               filled: true,
                               fillColor: Colors.white,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 20,
-                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
                                 borderSide: BorderSide.none,
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: BorderSide(
-                                  color: Colors.grey.shade200,
-                                ),
+                                borderSide: BorderSide(color: Colors.grey.shade200),
                               ),
                             ),
                           ),
@@ -492,24 +468,13 @@ class ScheduleFormModal extends StatelessWidget {
         const SizedBox(height: 10),
         InkWell(
           onTap: () async {
-            final picked = await showDatePicker(
-              context: context,
+            _pickDateResponsive(
+              context,
               initialDate: DateTime.now(),
-              firstDate: DateTime.now().subtract(const Duration(days: 30)),
-              lastDate: DateTime.now().add(const Duration(days: 365)),
-              builder: (context, child) {
-                return Theme(
-                  data: Theme.of(
-                    context,
-                  ).copyWith(colorScheme: ColorScheme.light(primary: color)),
-                  child: child!,
-                );
+              onChanged: (picked) {
+                context.read<ScheduleFormCubit>().toggleDate(picked);
               },
             );
-            if (picked != null) {
-              // ignore: use_build_context_synchronously
-              context.read<ScheduleFormCubit>().toggleDate(picked);
-            }
           },
           borderRadius: BorderRadius.circular(12),
           child: Container(
@@ -590,6 +555,221 @@ class ScheduleFormModal extends StatelessWidget {
     );
   }
 
+  void _pickDateResponsive(
+    BuildContext context, {
+    required DateTime initialDate,
+    DateTime? minimumDate,
+    required ValueChanged<DateTime> onChanged,
+  }) {
+    final isMobileView = MediaQuery.of(context).size.width < 600;
+    
+    if (isMobileView) {
+      _showScrollingDatePicker(
+        context,
+        initialDate: initialDate,
+        minimumDate: minimumDate,
+        onChanged: onChanged,
+      );
+    } else {
+      _showPremiumDatePickerDialog(
+        context,
+        initialDate: initialDate,
+        minimumDate: minimumDate,
+        onChanged: onChanged,
+      );
+    }
+  }
+
+  void _showPremiumDatePickerDialog(
+    BuildContext context, {
+    required DateTime initialDate,
+    DateTime? minimumDate,
+    required ValueChanged<DateTime> onChanged,
+  }) {
+    DateTime tempDate = initialDate;
+    final primaryColor = const Color(0xFF8B5CF6);
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          clipBehavior: Clip.antiAlias,
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 680),
+            height: 480,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Info Sidebar
+                Container(
+                  width: 240,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'CHỌN NGÀY',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              DateFormat('EEEE,', 'vi').format(tempDate),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                            Text(
+                              DateFormat('dd MMMM', 'vi').format(tempDate),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                height: 1.1,
+                              ),
+                            ),
+                            Text(
+                              DateFormat('yyyy', 'vi').format(tempDate),
+                              style: const TextStyle(
+                                color: Colors.white60,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      const Icon(
+                        Icons.calendar_month_outlined,
+                        color: Colors.white38,
+                        size: 54,
+                      ),
+                    ],
+                  ),
+                ),
+                // Calendar section
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TableCalendar(
+                          focusedDay: tempDate,
+                          firstDay: DateTime.now().subtract(
+                            const Duration(days: 365),
+                          ),
+                          lastDay: DateTime.now().add(const Duration(days: 365)),
+                          selectedDayPredicate: (day) => isSameDay(tempDate, day),
+                          calendarFormat: CalendarFormat.month,
+                          availableCalendarFormats: const {
+                            CalendarFormat.month: 'Month'
+                          },
+                          rowHeight: 52,
+                          daysOfWeekHeight: 32,
+                          headerStyle: const HeaderStyle(
+                            formatButtonVisible: false,
+                            titleCentered: true,
+                            titleTextStyle: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            headerPadding: EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          onDaySelected: (selectedDay, focusedDay) {
+                            if (minimumDate != null &&
+                                selectedDay.isBefore(minimumDate)) return;
+                            setDialogState(() => tempDate = selectedDay);
+                          },
+                          calendarStyle: CalendarStyle(
+                            selectedDecoration: BoxDecoration(
+                              color: primaryColor,
+                              shape: BoxShape.circle,
+                            ),
+                            todayDecoration: BoxDecoration(
+                              color: primaryColor.withOpacity(0.12),
+                              shape: BoxShape.circle,
+                            ),
+                            todayTextStyle: TextStyle(
+                              color: primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const Divider(),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text(
+                                  'Hủy',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              ElevatedButton(
+                                onPressed: () {
+                                  onChanged(tempDate);
+                                  Navigator.pop(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: primaryColor,
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 24, vertical: 12),
+                                ),
+                                child: const Text(
+                                  'Xác nhận',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showScrollingDatePicker(
     BuildContext context, {
     required DateTime initialDate,
@@ -607,14 +787,9 @@ class ScheduleFormModal extends StatelessWidget {
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Colors.grey.shade200),
-                  ),
+                  border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -637,8 +812,7 @@ class ScheduleFormModal extends StatelessWidget {
               Expanded(
                 child: CupertinoDatePicker(
                   mode: CupertinoDatePickerMode.date,
-                  initialDateTime:
-                      initialDate.isBefore(minimumDate ?? initialDate)
+                  initialDateTime: initialDate.isBefore(minimumDate ?? initialDate)
                       ? (minimumDate ?? initialDate)
                       : initialDate,
                   minimumDate: minimumDate,

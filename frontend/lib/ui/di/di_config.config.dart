@@ -147,6 +147,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i258.AuthService>(),
         gh<_i611.ScheduleRequestRepo>(),
         gh<_i479.NotificationRepo>(),
+        gh<_i1029.MealRepo>(),
       ),
     );
     gh.factory<_i158.ProfileCubit>(

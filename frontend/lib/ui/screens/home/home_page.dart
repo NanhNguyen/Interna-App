@@ -66,7 +66,6 @@ class HomePage extends StatelessWidget {
                                 flex: 2,
                                 child: Column(
                                   children: [
-                                    _buildTodayStatus(state.todaySchedule),
                                     _buildQuickActions(
                                       context,
                                       state,
@@ -114,7 +113,6 @@ class HomePage extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildTodayStatus(state.todaySchedule),
                             _buildQuickActions(context, state, isWide: false),
                             _buildQuickStats(state),
                             const Padding(
@@ -249,67 +247,78 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTodayStatus(ScheduleRequestModel? todaySchedule) {
-    if (todaySchedule == null) return const SizedBox.shrink();
-
-    final isLeave = todaySchedule.type == ScheduleType.LEAVE;
-    final color = const Color(0xFF8B5CF6); // Consistent blue
+  Widget _buildQuickStats(HomeState state) {
+    final role = getIt<AuthService>().currentUser?.role ?? UserRole.INTERN;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [color.withOpacity(0.15), color.withOpacity(0.05)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            AppStrings.quickStats, // Assuming this string exists
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: color.withOpacity(0.2)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
-                shape: BoxShape.circle,
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  label: AppStrings.pendingRequests, // Assuming this string exists
+                  value: '${state.pendingCount}',
+                  color: Colors.orange,
+                ),
               ),
-              child: Icon(
-                isLeave ? Icons.beach_access : Icons.work,
-                color: color,
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildStatCard(
+                  label: AppStrings.mealStatus, // Assuming this string exists
+                  value: role == UserRole.MANAGER
+                      ? '${state.mealCountToday} suất'
+                      : (state.isMealRegisteredToday ? 'Đã đăng ký' : 'Chưa đăng ký'),
+                  color: Colors.green,
+                ),
               ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard({
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w900,
+              fontSize: 14,
+              letterSpacing: 1.2,
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isLeave ? AppStrings.onLeaveToday : AppStrings.workingToday,
-                    style: TextStyle(
-                      color: color,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 14, // Increased from 12
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    isLeave
-                        ? AppStrings.personalLeave
-                        : 'Ca: ${todaySchedule.shift}',
-                    style: const TextStyle(
-                      fontSize: 22, // Increased from 20
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -571,52 +580,64 @@ class HomePage extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
+          // Stat 1: Pending (Useful for everyone)
           _buildStatCard(
-            isManagerOrHR ? 'Yêu cầu cần duyệt' : AppStrings.pendingRequests,
+            isManagerOrHR ? 'Yêu cầu chờ duyệt' : 'Đang chờ duyệt',
             state.pendingCount.toString(),
             Colors.orange,
+            Icons.pending_actions_rounded,
           ),
-          if (!isManagerOrHR) ...[
-            const SizedBox(width: 16),
-            _buildStatCard(
-              AppStrings.totalRequests,
-              state.totalCount.toString(),
-              const Color(0xFF8B5CF6),
-            ),
-          ],
+          const SizedBox(width: 16),
+          // Stat 2: Meal info
+          _buildStatCard(
+            isManagerOrHR ? 'Tổng suất cơm hôm nay' : 'Cơm hôm nay',
+            isManagerOrHR 
+                ? state.mealCountToday.toString() 
+                : (state.isMealRegisteredToday ? 'Đã đăng ký' : 'Chưa đăng ký'),
+            state.isMealRegisteredToday || isManagerOrHR ? Colors.green : Colors.blueGrey,
+            Icons.restaurant_rounded,
+            smallerTitle: !isManagerOrHR,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildStatCard(String label, String value, Color color) {
+  Widget _buildStatCard(String label, String value, Color color, IconData icon, {bool smallerTitle = false}) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.3)),
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withOpacity(0.2)),
         ),
         child: Column(
           children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 8),
             Text(
               value,
               style: TextStyle(
-                fontSize: 32, // Increased from 24
-                fontWeight: FontWeight.bold,
+                fontSize: smallerTitle ? 18 : 32,
+                fontWeight: FontWeight.w900,
                 color: color,
+                letterSpacing: smallerTitle ? 0 : -1,
               ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
             ),
             const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
-                color: color.withOpacity(0.8),
-                fontSize: 16, // Increased
-                fontWeight: FontWeight.w500,
+                color: color.withOpacity(0.9),
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

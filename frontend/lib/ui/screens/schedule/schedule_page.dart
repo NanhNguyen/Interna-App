@@ -303,39 +303,82 @@ class _SchedulePageState extends State<SchedulePage> {
           );
 
           if (isWide) {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            return Column(
               children: [
+                _buildDesktopStats(state, isManagerOrHR),
                 Expanded(
-                  flex: 2,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [_buildLegend(isManagerOrHR), calendarWidget],
-                    ),
-                  ),
-                ),
-                const VerticalDivider(width: 1, thickness: 1),
-                Expanded(
-                  flex: 1,
-                  child: Column(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        color: Colors.white,
-                        child: Text(
-                          _selectedDay != null
-                              ? 'Lịch trình ngày ${DateFormat('dd/MM', 'vi').format(_selectedDay!)}'
-                              : 'Chọn một ngày',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                      Expanded(
+                        flex: 12,
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.fromLTRB(24, 0, 12, 24),
+                          child: Column(
+                            children: [
+                              _buildLegend(isManagerOrHR),
+                              Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 10),
+                                    ),
+                                  ],
+                                ),
+                                child: calendarWidget,
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      const Divider(height: 1),
-                      Expanded(child: eventListWidget),
+                      const VerticalDivider(width: 1, thickness: 1),
+                      Expanded(
+                        flex: 7,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                border: Border(bottom: BorderSide(color: Color(0xFFF3F4F6))),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF8B5CF6).withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Icon(Icons.event_note_rounded, color: Color(0xFF8B5CF6), size: 20),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    _selectedDay != null
+                                        ? 'Lịch trình ngày ${DateFormat('dd/MM', 'vi').format(_selectedDay!)}'
+                                        : 'Chọn một ngày',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                color: const Color(0xFFF9FAFB),
+                                child: eventListWidget,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -365,21 +408,117 @@ class _SchedulePageState extends State<SchedulePage> {
     );
   }
 
-  Widget _buildCustomCalendarHeader(CalendarFormat format) {
+  Widget _buildDesktopStats(ScheduleState state, bool isManagerOrHR) {
+    // Basic stats calculation for demo
+    final today = DateTime.now();
+    final todaySchedules = _getSchedulesForDay(state.approvedSchedules, today);
+    final leaveCount = todaySchedules.where((s) => s.type == ScheduleType.LEAVE).length;
+    final workCount = todaySchedules.where((s) => s.type == ScheduleType.WORK).length;
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        children: [
+          _buildStatCard(
+            'Nhân viên nghỉ phép',
+            '$leaveCount',
+            'Hôm nay',
+            Icons.beach_access_rounded,
+            const Color(0xFF8B5CF6),
+          ),
+          const SizedBox(width: 20),
+          _buildStatCard(
+            'Nhân viên làm việc',
+            '$workCount',
+            'Tổng cộng nhân sự',
+            Icons.work_rounded,
+            const Color(0xFF0EA5E9),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String title, String value, String sub, IconData icon, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.08),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
+          border: Border.all(color: color.withOpacity(0.1)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 26),
+            ),
+            const SizedBox(width: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: -1),
+                ),
+                Text(
+                  sub,
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomCalendarHeader(CalendarFormat format) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF8B5CF6).withOpacity(0.03),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: Text(
-              DateFormat.yMMMM('vi').format(_focusedDay).toUpperCase(),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF8B5CF6),
-              ),
-              overflow: TextOverflow.ellipsis,
+            child: Row(
+              children: [
+                const Icon(Icons.calendar_month_rounded, color: Color(0xFF8B5CF6), size: 22),
+                const SizedBox(width: 10),
+                Text(
+                  DateFormat.yMMMM('vi').format(_focusedDay).toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF8B5CF6),
+                    letterSpacing: 0.5,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 8),

@@ -12,8 +12,8 @@ class HomeState with _$HomeState {
     String? errorMessage,
     UserModel? user,
     @Default(0) int pendingCount,
-    @Default(0) int totalCount,
-    @Default(0) int unreadNotificationCount,
+    @Default(0) int mealCountToday,
+    @Default(false) bool isMealRegisteredToday,
     ScheduleRequestModel? todaySchedule,
   }) = _HomeState;
 }

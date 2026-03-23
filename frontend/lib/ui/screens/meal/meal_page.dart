@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -10,7 +11,6 @@ import '../../../data/service/auth_service.dart';
 import '../../di/di_config.dart';
 import 'cubit/meal_cubit.dart';
 import 'cubit/meal_state.dart';
-
 import '../main/cubit/main_cubit.dart';
 
 @RoutePage()
@@ -117,123 +117,262 @@ class _MealPageState extends State<MealPage>
   Widget _buildOverviewView() {
     return BlocBuilder<MealCubit, MealState>(
       builder: (context, state) {
-        final filteredMeals = _getMealsForDay(
-          state.allRegistrations,
-          _overviewDate,
-        );
-        return RefreshIndicator(
-          onRefresh: () => _cubit.loadAllRegistrations(),
-          child: Column(
-            children: [
-              _buildCustomCalendarHeader(),
-              _buildCalendarRibbon(state.allRegistrations),
-              if (state.status == BaseStatus.error)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  color: Colors.red.shade50,
-                  width: double.infinity,
-                  child: Text(
-                    'Lỗi: ${state.errorMessage}',
-                    style: TextStyle(color: Colors.red.shade700),
-                    textAlign: TextAlign.center,
+        final filteredMeals = _getMealsForDay(state.allRegistrations, _overviewDate);
+        
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth >= 800;
+            
+            if (isWide) {
+              return Column(
+                children: [
+                   _buildMealStatsHeader(filteredMeals),
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 12,
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Column(
+                              children: [
+                                _buildCustomCalendarHeader(),
+                                Container(
+                                  clipBehavior: Clip.antiAlias,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 20,
+                                        offset: const Offset(0, 10),
+                                      ),
+                                    ],
+                                  ),
+                                  child: _buildCalendarRibbon(state.allRegistrations),
+                                ),
+                                const SizedBox(height: 24),
+                                _buildSummaryCard(filteredMeals),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const VerticalDivider(width: 1),
+                        Expanded(
+                          flex: 8,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                               Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border(bottom: BorderSide(color: Color(0xFFF3F4F6))),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(Icons.people_outline, color: Color(0xFF8B5CF6)),
+                                    SizedBox(width: 12),
+                                    Text(
+                                      'Danh sách đăng ký',
+                                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  color: const Color(0xFFF9FAFB),
+                                  child: _buildOverviewList(filteredMeals),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              Expanded(
-                child:
-                    state.status == BaseStatus.loading &&
-                        state.allRegistrations.isEmpty
-                    ? const Center(child: CircularProgressIndicator())
-                    : Column(
-                        children: [
-                          _buildSummaryCard(filteredMeals),
-                          Expanded(child: _buildOverviewList(filteredMeals)),
-                        ],
+                ],
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: () => _cubit.loadAllRegistrations(),
+              child: Column(
+                children: [
+                  _buildCustomCalendarHeader(),
+                  _buildCalendarRibbon(state.allRegistrations),
+                  if (state.status == BaseStatus.error)
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      color: Colors.red.shade50,
+                      width: double.infinity,
+                      child: Text(
+                        'Lỗi: ${state.errorMessage}',
+                        style: TextStyle(color: Colors.red.shade700),
+                        textAlign: TextAlign.center,
                       ),
+                    ),
+                  Expanded(
+                    child: state.status == BaseStatus.loading && state.allRegistrations.isEmpty
+                        ? const Center(child: CircularProgressIndicator())
+                        : Column(
+                            children: [
+                              _buildSummaryCard(filteredMeals),
+                              Expanded(child: _buildOverviewList(filteredMeals)),
+                            ],
+                          ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildCalendarRibbon(List<MealModel> allMeals) {
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 2,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(16),
-          bottomRight: Radius.circular(16),
+  Widget _buildMealStatsHeader(List<MealModel> filteredMeals) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        children: [
+           _buildOverviewStatCard(
+            'Tổng suất cơm',
+            '${filteredMeals.length}',
+            'Hôm nay',
+            Icons.restaurant_rounded,
+            const Color(0xFF8B5CF6),
+          ),
+          const SizedBox(width: 20),
+          _buildOverviewStatCard(
+            'Cơm trưa',
+            '${filteredMeals.where((m) => m.shift == MealShift.LUNCH).length}',
+            'Hệ thống đang hỗ trợ',
+            Icons.lunch_dining_rounded,
+            const Color(0xFF0EA5E9),
+          ),
+          const SizedBox(width: 20),
+          _buildOverviewStatCard(
+            'Lặp lại',
+            '${filteredMeals.where((m) => m.isRecurring).length}',
+            'Đăng ký hàng tuần',
+            Icons.loop_rounded,
+            const Color(0xFF10B981),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverviewStatCard(String title, String value, String sub, IconData icon, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.08),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
+          border: Border.all(color: color.withOpacity(0.1)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+              child: Icon(icon, color: color, size: 26),
+            ),
+            const SizedBox(width: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: TextStyle(fontSize: 14, color: Colors.grey.shade600, fontWeight: FontWeight.w500)),
+                const SizedBox(height: 4),
+                Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: -1)),
+                Text(sub, style: TextStyle(fontSize: 12, color: Colors.grey.shade400)),
+              ],
+            ),
+          ],
         ),
       ),
-      child: TableCalendar(
-        headerVisible: false,
-        firstDay: DateTime(2020),
-        lastDay: DateTime(2030),
-        focusedDay: _focusedDay,
-        calendarFormat: CalendarFormat.week,
-        availableCalendarFormats: const {CalendarFormat.week: 'Week'},
-        locale: 'vi',
-        rowHeight: 110,
-        daysOfWeekHeight: 40,
-        daysOfWeekStyle: DaysOfWeekStyle(
-          weekdayStyle: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-            color: Colors.grey.shade700,
-          ),
-          weekendStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-            color: Colors.redAccent,
-          ),
+    );
+  }
+
+  Widget _buildCalendarRibbon(List<MealModel> allMeals) {
+    return TableCalendar(
+      headerVisible: false,
+      firstDay: DateTime(2020),
+      lastDay: DateTime(2030),
+      focusedDay: _focusedDay,
+      calendarFormat: CalendarFormat.week,
+      availableCalendarFormats: const {CalendarFormat.week: 'Week'},
+      locale: 'vi',
+      rowHeight: 110,
+      daysOfWeekHeight: 40,
+      daysOfWeekStyle: DaysOfWeekStyle(
+        weekdayStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+          color: Colors.grey.shade700,
         ),
-        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-        onDaySelected: (selectedDay, focusedDay) {
-          setState(() {
-            _selectedDay = selectedDay;
-            _focusedDay = focusedDay;
-            _overviewDate = selectedDay;
-          });
-        },
-        onPageChanged: (focusedDay) {
-          setState(() => _focusedDay = focusedDay);
-        },
-        calendarBuilders: CalendarBuilders(
-          dowBuilder: (context, day) {
-            final text = DateFormat.E('vi').format(day);
-            return Center(
-              child: Text(
-                text,
-                style: TextStyle(
-                  color: day.weekday == DateTime.sunday
-                      ? Colors.redAccent
-                      : Colors.grey.shade700,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
+        weekendStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+          color: Colors.redAccent,
+        ),
+      ),
+      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+      onDaySelected: (selectedDay, focusedDay) {
+        setState(() {
+          _selectedDay = selectedDay;
+          _focusedDay = focusedDay;
+          _overviewDate = selectedDay;
+        });
+      },
+      onPageChanged: (focusedDay) {
+        setState(() => _focusedDay = focusedDay);
+      },
+      calendarBuilders: CalendarBuilders(
+        dowBuilder: (context, day) {
+          final text = DateFormat.E('vi').format(day);
+          return Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: day.weekday == DateTime.sunday
+                    ? Colors.redAccent
+                    : Colors.grey.shade700,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
-            );
-          },
-          defaultBuilder: (context, day, focusedDay) => _buildWeekDayCell(
-            day,
-            allMeals,
-            isSelected: false,
-            isToday: false,
-          ),
-          todayBuilder: (context, day, focusedDay) => _buildWeekDayCell(
-            day,
-            allMeals,
-            isSelected: false,
-            isToday: true,
-          ),
-          selectedBuilder: (context, day, focusedDay) => _buildWeekDayCell(
-            day,
-            allMeals,
-            isSelected: true,
-            isToday: false,
-          ),
+            ),
+          );
+        },
+        defaultBuilder: (context, day, focusedDay) => _buildWeekDayCell(
+          day,
+          allMeals,
+          isSelected: false,
+          isToday: false,
+        ),
+        todayBuilder: (context, day, focusedDay) => _buildWeekDayCell(
+          day,
+          allMeals,
+          isSelected: false,
+          isToday: true,
+        ),
+        selectedBuilder: (context, day, focusedDay) => _buildWeekDayCell(
+          day,
+          allMeals,
+          isSelected: true,
+          isToday: false,
         ),
       ),
     );
@@ -283,7 +422,7 @@ class _MealPageState extends State<MealPage>
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
-                      color: Colors.white, // Changed from indigo
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -344,7 +483,7 @@ class _MealPageState extends State<MealPage>
       borderColor = const Color(0xFF8B5CF6);
     } else if (isToday) {
       bgColor = const Color(0xFF8B5CF6);
-      dayNumColor = Colors.white; // Changed from indigo
+      dayNumColor = Colors.white;
       borderColor = const Color(0xFF8B5CF6);
     } else if (isWeekend) {
       bgColor = Colors.grey.shade50;
@@ -379,7 +518,7 @@ class _MealPageState extends State<MealPage>
             label: 'Trưa',
             count: count,
             color: const Color(0xFF8B5CF6),
-            bgColor: const Color(0xFF8B5CF6).withOpacity(0.12), // Added opacity for contrast
+            bgColor: const Color(0xFF8B5CF6).withOpacity(0.12),
             isSelected: isSelected,
           ),
         ],
@@ -454,15 +593,16 @@ class _MealPageState extends State<MealPage>
 
   Widget _buildSummaryCard(List<MealModel> items) {
     return Container(
+      width: double.infinity,
       margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF8B5CF6).withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
         gradient: const LinearGradient(
@@ -479,19 +619,19 @@ class _MealPageState extends State<MealPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Tổng suất cơm cần đặt',
+                  'Số suất cần đặt',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: 6),
                 Text(
-                  'Hôm nay',
+                  'Hệ thống tổng hợp',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -499,16 +639,16 @@ class _MealPageState extends State<MealPage>
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Text(
               '${items.length}',
               style: const TextStyle(
                 color: Color(0xFF8B5CF6),
-                fontSize: 24,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -536,11 +676,6 @@ class _MealPageState extends State<MealPage>
                 'Không có ai đăng ký cơm ngày này',
                 style: TextStyle(color: Colors.grey),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Thử chọn ngày khác hoặc kéo xuống để tải lại',
-                style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-              ),
             ],
           ),
         ),
@@ -555,53 +690,40 @@ class _MealPageState extends State<MealPage>
         final name = meal.userMetadata?['name'] ?? 'Ẩn danh';
         return Card(
           elevation: 0,
-          margin: const EdgeInsets.only(bottom: 8),
+          margin: const EdgeInsets.only(bottom: 12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.grey.shade200),
+            borderRadius: BorderRadius.circular(14),
+            side: BorderSide(color: Colors.grey.shade100),
           ),
           child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             leading: CircleAvatar(
-              backgroundColor: const Color(0xFF8B5CF6),
+              radius: 24,
+              backgroundColor: const Color(0xFF8B5CF6).withOpacity(0.1),
               child: Text(
                 name.isNotEmpty ? name[0].toUpperCase() : '?',
                 style: const TextStyle(
-                  color: Colors.white, // Changed from indigo
+                  color: Color(0xFF8B5CF6),
                   fontWeight: FontWeight.bold,
+                  fontSize: 18,
                 ),
               ),
             ),
             title: Text(
               name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             subtitle: Text(
-              meal.isRecurring ? 'Đăng ký lặp lại' : 'Đăng ký một lần',
+              meal.isRecurring ? 'Đăng ký lặp lại hàng tuần' : 'Đăng ký một lần',
+              style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
             ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (meal.note != null && meal.note!.isNotEmpty)
-                  Tooltip(
-                    message: meal.note,
-                    child: const Padding(
-                      padding: EdgeInsets.only(right: 8),
-                      child: Icon(
-                        Icons.note,
-                        size: 18,
-                        color: Color(0xFF8B5CF6),
-                      ),
-                    ),
-                  ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.delete_outline,
-                    color: Colors.red,
-                    size: 20,
-                  ),
-                  onPressed: () => _confirmDelete(context, meal.id),
-                ),
-              ],
+            trailing: IconButton(
+              icon: const Icon(
+                Icons.delete_outline,
+                color: Colors.red,
+                size: 22,
+              ),
+              onPressed: () => _confirmDelete(context, meal.id),
             ),
           ),
         );
@@ -649,42 +771,26 @@ class _MealPageState extends State<MealPage>
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
                         child: Text(
-                          'Lịch đăng ký của bạn',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          'Đăng ký của tôi',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
-                        (context, index) =>
-                            _buildMealCard(context, state.meals[index]),
+                        (context, index) => _buildMealItem(state.meals[index]),
                         childCount: state.meals.length,
                       ),
                     ),
-                  ] else if (state.status == BaseStatus.success)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(40),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.rice_bowl_outlined,
-                              size: 60,
-                              color: Colors.grey.shade400,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Chưa có lịch đặt cơm nào',
-                              style: TextStyle(color: Colors.grey.shade600),
-                            ),
-                          ],
+                  ] else if (state.status != BaseStatus.loading)
+                    const SliverFillRemaining(
+                      child: Center(
+                        child: Text(
+                          'Bạn chưa đăng ký suất ăn nào.',
+                          style: TextStyle(color: Colors.grey),
                         ),
                       ),
                     ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 80)),
                 ],
               ),
             ),
@@ -696,65 +802,42 @@ class _MealPageState extends State<MealPage>
 
   Widget _buildRegisterCard(BuildContext context, MealState state) {
     return Card(
-      elevation: 2,
+      elevation: 4,
+      shadowColor: Colors.black12,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      child: Container(
+        padding: const EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF8B5CF6),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.rice_bowl,
-                    color: Colors.white, // Changed from indigo
-                    size: 28,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Đăng ký cơm trưa',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'Đặt cơm từ Thứ 2 – Thứ 6, có thể lặp lại theo tuần',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            const Icon(Icons.restaurant_menu, size: 48, color: Color(0xFF8B5CF6)),
             const SizedBox(height: 16),
+            const Text(
+              'Đăng ký cơm cho nhân viên',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Đăng ký suất ăn để bộ phận HR chuẩn bị chu đáo nhất nhé.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey.shade600, height: 1.4),
+            ),
+            const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton.icon(
+              height: 52,
+              child: ElevatedButton(
                 onPressed: () => _showMealFormSheet(context),
-                icon: const Icon(Icons.add),
-                label: const Text('Đăng ký ngay'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF8B5CF6),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Bắt đầu đăng ký',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -764,95 +847,57 @@ class _MealPageState extends State<MealPage>
     );
   }
 
-  Widget _buildMealCard(BuildContext context, MealModel meal) {
-    final dateFormat = DateFormat('dd/MM/yyyy');
-    final shift = meal.shift.displayName;
+  Widget _buildMealItem(MealModel meal) {
     final isRecurring = meal.isRecurring;
+    final shift = meal.shift.displayName;
+    final dateFormat = DateFormat('dd/MM/yyyy');
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF8B5CF6).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              isRecurring ? Icons.repeat : Icons.calendar_today,
+              color: const Color(0xFF8B5CF6),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(shift, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                if (isRecurring && meal.weekdays.isNotEmpty)
+                  Text(
+                    meal.weekdays.map((w) => w.displayName).join(', '),
+                    style: const TextStyle(fontSize: 14, color: Color(0xFF8B5CF6), fontWeight: FontWeight.w600),
+                  )
+                else
+                  Text(
+                    'Từ: ${dateFormat.format(meal.startDate)}',
+                    style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () => _confirmDelete(context, meal.id),
+            icon: const Icon(Icons.delete_outline, color: Colors.red),
           ),
         ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: const Color(0xFF8B5CF6),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                isRecurring ? Icons.repeat : Icons.event,
-                color: Colors.white, // Changed from indigo
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    shift,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  if (isRecurring && meal.weekdays.isNotEmpty)
-                    Text(
-                      meal.weekdays.map((w) => w.displayName).join(', '),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF8B5CF6),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    )
-                  else
-                    Text(
-                      'Từ: ${dateFormat.format(meal.startDate)}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  if (meal.endDate != null)
-                    Text(
-                      'Đến: ${dateFormat.format(meal.endDate!)}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                  if (meal.note != null && meal.note!.isNotEmpty)
-                    Text(
-                      meal.note!,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            IconButton(
-              onPressed: () => _confirmDelete(context, meal.id),
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -864,15 +909,11 @@ class _MealPageState extends State<MealPage>
         title: const Text('Xóa đăng ký cơm'),
         content: const Text('Bạn có muốn hủy đăng ký suất cơm này không?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Hủy'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Hủy')),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
               _cubit.deleteMeal(id).then((_) {
-                // If HR, reload overview after deleting
                 if (_isHR) _cubit.loadMealOverview(_overviewDate);
               });
             },
@@ -889,8 +930,10 @@ class _MealPageState extends State<MealPage>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) =>
-          BlocProvider.value(value: _cubit, child: const _MealFormSheet()),
+      builder: (_) => BlocProvider.value(
+        value: _cubit,
+        child: const _MealFormSheet(),
+      ),
     );
   }
 }
@@ -925,158 +968,339 @@ class _MealFormSheetState extends State<_MealFormSheet> {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.7,
+      initialChildSize: 0.75,
       maxChildSize: 0.95,
-      minChildSize: 0.4,
-      builder: (_, controller) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 12),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
+      minChildSize: 0.5,
+      builder: (_, controller) => Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Đăng ký cơm trưa',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const Divider(),
-            Expanded(
-              child: ListView(
-                controller: controller,
-                padding: const EdgeInsets.all(20),
-                children: [
-                  const Text(
-                    'Bạn đang đăng ký cơm cho buổi trưa',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Color(0xFF8B5CF6),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+                ),
+                const SizedBox(height: 16),
+                const Text('Đăng ký cơm trưa', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const Divider(),
+                Expanded(
+                  child: ListView(
+                    controller: controller,
+                    padding: const EdgeInsets.all(24),
                     children: [
-                      const Text(
-                        'Lặp lại hàng tuần',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                      _buildInfoBox(),
+                      const SizedBox(height: 24),
+                      _buildRecurringToggle(),
+                      if (_isRecurring) ...[
+                        const SizedBox(height: 20),
+                        _buildWeekdaySelector(),
+                      ],
+                      const SizedBox(height: 24),
+                      _buildDateSection(
+                        _isRecurring ? 'Ngày bắt đầu' : 'Ngày đăng ký',
+                        _startDate,
+                        (date) => setState(() => _startDate = date),
+                      ),
+                      if (_isRecurring) ...[
+                        const SizedBox(height: 16),
+                        _buildDateSection(
+                          'Ngày kết thúc',
+                          _endDate,
+                          (date) => setState(() => _endDate = date),
+                          minDate: _startDate,
                         ),
-                      ),
-                      Switch(
-                        value: _isRecurring,
-                        onChanged: (v) => setState(() => _isRecurring = v),
-                        activeColor: const Color(0xFF8B5CF6),
-                      ),
+                      ],
+                      const SizedBox(height: 24),
+                      _buildNoteField(),
+                      const SizedBox(height: 32),
+                      _buildSubmitButton(),
+                      const SizedBox(height: 24),
                     ],
                   ),
-                  if (_isRecurring) ...[
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Chọn các thứ trong tuần',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoBox() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF8B5CF6).withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF8B5CF6).withOpacity(0.1)),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.info_outline, color: Color(0xFF8B5CF6), size: 20),
+          SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Hệ thống hiện tại áp dụng cho suất cơm buổi trưa.',
+              style: TextStyle(fontSize: 14, color: Color(0xFF8B5CF6), fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecurringToggle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Lặp lại hàng tuần', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text('Tự động đăng ký cho tương lai', style: TextStyle(fontSize: 12, color: Colors.grey)),
+          ],
+        ),
+        Switch(
+          value: _isRecurring,
+          onChanged: (v) => setState(() => _isRecurring = v),
+          activeColor: const Color(0xFF8B5CF6),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWeekdaySelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Chọn các thứ trong tuần', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: MealWeekday.values.map((day) {
+            final selected = _selectedWeekdays.contains(day);
+            return FilterChip(
+              label: Text(day.displayName),
+              selected: selected,
+              onSelected: (val) {
+                setState(() {
+                  if (val) _selectedWeekdays.add(day); else _selectedWeekdays.remove(day);
+                });
+              },
+              selectedColor: const Color(0xFF8B5CF6),
+              labelStyle: TextStyle(
+                color: selected ? Colors.white : Colors.black87,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+              checkmarkColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateSection(String label, DateTime date, ValueChanged<DateTime> onPicked, {DateTime? minDate}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 10),
+        InkWell(
+          onTap: () => _pickDateResponsive(context, initialDate: date, minimumDate: minDate, onChanged: onPicked),
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.grey.shade200),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.calendar_today_rounded, size: 18, color: Color(0xFF8B5CF6)),
+                const SizedBox(width: 12),
+                Text(DateFormat('dd/MM/yyyy').format(date), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const Spacer(),
+                const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.grey),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _pickDateResponsive(BuildContext context, {required DateTime initialDate, DateTime? minimumDate, required ValueChanged<DateTime> onChanged}) {
+    final isMobileView = MediaQuery.of(context).size.width < 600;
+    if (isMobileView) {
+      _showScrollingDatePicker(context, initialDate: initialDate, minimumDate: minimumDate, onChanged: onChanged);
+    } else {
+      _showPremiumDatePickerDialog(context, initialDate: initialDate, minimumDate: minimumDate, onChanged: onChanged);
+    }
+  }
+
+  void _showPremiumDatePickerDialog(BuildContext context, {required DateTime initialDate, DateTime? minimumDate, required ValueChanged<DateTime> onChanged}) {
+    DateTime tempDate = initialDate;
+    final primaryColor = const Color(0xFF8B5CF6);
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          clipBehavior: Clip.antiAlias,
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 680),
+            height: 480,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Info Sidebar
+                Container(
+                  width: 240,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      children: MealWeekday.values.map((day) {
-                        final selected = _selectedWeekdays.contains(day);
-                        return FilterChip(
-                          label: Text(day.displayName),
-                          selected: selected,
-                          onSelected: (val) {
-                            setState(() {
-                              if (val)
-                                _selectedWeekdays.add(day);
-                              else
-                                _selectedWeekdays.remove(day);
-                            });
-                          },
-                          selectedColor: Colors.indigo.shade700,
-                          labelStyle: TextStyle(
-                            color: selected ? Colors.white : Colors.black87,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          checkmarkColor: Colors.white,
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                  const SizedBox(height: 20),
-                  _buildDatePicker(
-                    _isRecurring ? 'Từ ngày' : 'Ngày đăng ký',
-                    _startDate,
-                    (date) => setState(() => _startDate = date),
                   ),
-                  if (_isRecurring) ...[
-                    const SizedBox(height: 12),
-                    _buildDatePicker(
-                      'Đến ngày',
-                      _endDate,
-                      (date) => setState(() => _endDate = date),
-                    ),
-                  ],
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _noteController,
-                    decoration: InputDecoration(
-                      labelText: 'Ghi chú (tuỳ chọn)',
-                      hintText: 'ví dụ: không ăn cay...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    maxLines: 2,
-                  ),
-                  const SizedBox(height: 24),
-                  BlocBuilder<MealCubit, MealState>(
-                    builder: (context, state) {
-                      return SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton(
-                          onPressed: state.submitStatus == BaseStatus.loading
-                              ? null
-                              : () => _submit(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF8B5CF6),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                          child: state.submitStatus == BaseStatus.loading
-                              ? const SizedBox(
-                                  height: 22,
-                                  width: 22,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Text(
-                                  'Xác nhận đăng ký',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('CHỌN NGÀY',
+                          style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
+                      const SizedBox(height: 16),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(DateFormat('EEEE,', 'vi').format(tempDate),
+                                style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w300)),
+                            Text(DateFormat('dd MMMM', 'vi').format(tempDate),
+                                style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, height: 1.1)),
+                            Text(DateFormat('yyyy', 'vi').format(tempDate),
+                                style: const TextStyle(color: Colors.white60, fontSize: 22, fontWeight: FontWeight.w400)),
+                          ],
                         ),
-                      );
-                    },
+                      ),
+                      const Spacer(),
+                      const Icon(Icons.calendar_month_outlined, color: Colors.white38, size: 54),
+                    ],
                   ),
+                ),
+                // Calendar section
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TableCalendar(
+                          focusedDay: tempDate,
+                          firstDay: DateTime.now().subtract(const Duration(days: 365)),
+                          lastDay: DateTime.now().add(const Duration(days: 365)),
+                          selectedDayPredicate: (day) => isSameDay(tempDate, day),
+                          calendarFormat: CalendarFormat.month,
+                          availableCalendarFormats: const {CalendarFormat.month: 'Month'},
+                          rowHeight: 52,
+                          daysOfWeekHeight: 32,
+                          headerStyle: const HeaderStyle(
+                            formatButtonVisible: false,
+                            titleCentered: true,
+                            titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            headerPadding: EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          onDaySelected: (selectedDay, focusedDay) {
+                            if (minimumDate != null && selectedDay.isBefore(minimumDate)) return;
+                            setDialogState(() => tempDate = selectedDay);
+                          },
+                          calendarStyle: CalendarStyle(
+                            selectedDecoration: BoxDecoration(color: primaryColor, shape: BoxShape.circle),
+                            todayDecoration: BoxDecoration(color: primaryColor.withOpacity(0.12), shape: BoxShape.circle),
+                            todayTextStyle: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const Divider(),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Hủy', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                              ),
+                              const SizedBox(width: 12),
+                              ElevatedButton(
+                                onPressed: () {
+                                  onChanged(tempDate);
+                                  Navigator.pop(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: primaryColor,
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                ),
+                                child: const Text('Xác nhận', style: TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showScrollingDatePicker(BuildContext context, {required DateTime initialDate, DateTime? minimumDate, required ValueChanged<DateTime> onChanged}) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => SizedBox(
+        height: 300,
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey.shade200))),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
+                  const Text('Chọn ngày', style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextButton(onPressed: () => Navigator.pop(context), child: const Text('Xong')),
                 ],
+              ),
+            ),
+            Expanded(
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: initialDate.isBefore(minimumDate ?? initialDate) ? (minimumDate ?? initialDate) : initialDate,
+                minimumDate: minimumDate,
+                onDateTimeChanged: onChanged,
               ),
             ),
           ],
@@ -1085,41 +1309,43 @@ class _MealFormSheetState extends State<_MealFormSheet> {
     );
   }
 
-  Widget _buildDatePicker(
-    String label,
-    DateTime currentDate,
-    ValueChanged<DateTime> onPicked,
-  ) {
-    return InkWell(
-      onTap: () async {
-        final picked = await showDatePicker(
-          context: context,
-          initialDate: currentDate,
-          firstDate: DateTime.now().subtract(const Duration(days: 1)),
-          lastDate: DateTime.now().add(const Duration(days: 365)),
-        );
-        if (picked != null) onPicked(picked);
-      },
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(12),
+  Widget _buildNoteField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Ghi chú', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _noteController,
+          decoration: InputDecoration(
+            hintText: 'ví dụ: không ăn cay...',
+            filled: true,
+            fillColor: Colors.grey.shade50,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Colors.grey.shade200)),
+          ),
+          maxLines: 2,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              label,
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-            ),
-            Text(
-              DateFormat('dd/MM/yyyy').format(currentDate),
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-            ),
-            Icon(Icons.calendar_today, size: 18, color: Colors.indigo.shade300),
-          ],
+      ],
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return BlocBuilder<MealCubit, MealState>(
+      builder: (context, state) => SizedBox(
+        width: double.infinity,
+        height: 54,
+        child: ElevatedButton(
+          onPressed: state.submitStatus == BaseStatus.loading ? null : () => _submit(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF8B5CF6),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            elevation: 0,
+          ),
+          child: state.submitStatus == BaseStatus.loading
+              ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+              : const Text('Xác nhận đăng ký', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         ),
       ),
     );
@@ -1127,22 +1353,16 @@ class _MealFormSheetState extends State<_MealFormSheet> {
 
   void _submit(BuildContext context) {
     if (_isRecurring && _selectedWeekdays.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Chọn ít nhất 1 thứ')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chọn ít nhất 1 thứ')));
       return;
     }
     final note = _noteController.text.trim();
-
-    // If not recurring, end date should be same as start date
     final finalEndDate = _isRecurring ? _endDate : _startDate;
 
     final data = {
       'shift': _selectedShift.name,
       'isRecurring': _isRecurring,
-      'weekdays': _isRecurring
-          ? _selectedWeekdays.map((w) => w.name).toList()
-          : [],
+      'weekdays': _isRecurring ? _selectedWeekdays.map((w) => w.name).toList() : [],
       'startDate': _startDate.toIso8601String(),
       'endDate': finalEndDate.toIso8601String(),
       'note': note,

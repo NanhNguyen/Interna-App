@@ -21,8 +21,8 @@ mixin _$HomeState {
   String? get errorMessage => throw _privateConstructorUsedError;
   UserModel? get user => throw _privateConstructorUsedError;
   int get pendingCount => throw _privateConstructorUsedError;
-  int get totalCount => throw _privateConstructorUsedError;
-  int get unreadNotificationCount => throw _privateConstructorUsedError;
+  int get mealCountToday => throw _privateConstructorUsedError;
+  bool get isMealRegisteredToday => throw _privateConstructorUsedError;
   ScheduleRequestModel? get todaySchedule => throw _privateConstructorUsedError;
 
   /// Create a copy of HomeState
@@ -42,8 +42,8 @@ abstract class $HomeStateCopyWith<$Res> {
     String? errorMessage,
     UserModel? user,
     int pendingCount,
-    int totalCount,
-    int unreadNotificationCount,
+    int mealCountToday,
+    bool isMealRegisteredToday,
     ScheduleRequestModel? todaySchedule,
   });
 
@@ -70,8 +70,8 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
     Object? errorMessage = freezed,
     Object? user = freezed,
     Object? pendingCount = null,
-    Object? totalCount = null,
-    Object? unreadNotificationCount = null,
+    Object? mealCountToday = null,
+    Object? isMealRegisteredToday = null,
     Object? todaySchedule = freezed,
   }) {
     return _then(
@@ -92,14 +92,14 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
                 ? _value.pendingCount
                 : pendingCount // ignore: cast_nullable_to_non_nullable
                       as int,
-            totalCount: null == totalCount
-                ? _value.totalCount
-                : totalCount // ignore: cast_nullable_to_non_nullable
+            mealCountToday: null == mealCountToday
+                ? _value.mealCountToday
+                : mealCountToday // ignore: cast_nullable_to_non_nullable
                       as int,
-            unreadNotificationCount: null == unreadNotificationCount
-                ? _value.unreadNotificationCount
-                : unreadNotificationCount // ignore: cast_nullable_to_non_nullable
-                      as int,
+            isMealRegisteredToday: null == isMealRegisteredToday
+                ? _value.isMealRegisteredToday
+                : isMealRegisteredToday // ignore: cast_nullable_to_non_nullable
+                      as bool,
             todaySchedule: freezed == todaySchedule
                 ? _value.todaySchedule
                 : todaySchedule // ignore: cast_nullable_to_non_nullable
@@ -152,8 +152,8 @@ abstract class _$$HomeStateImplCopyWith<$Res>
     String? errorMessage,
     UserModel? user,
     int pendingCount,
-    int totalCount,
-    int unreadNotificationCount,
+    int mealCountToday,
+    bool isMealRegisteredToday,
     ScheduleRequestModel? todaySchedule,
   });
 
@@ -181,8 +181,8 @@ class __$$HomeStateImplCopyWithImpl<$Res>
     Object? errorMessage = freezed,
     Object? user = freezed,
     Object? pendingCount = null,
-    Object? totalCount = null,
-    Object? unreadNotificationCount = null,
+    Object? mealCountToday = null,
+    Object? isMealRegisteredToday = null,
     Object? todaySchedule = freezed,
   }) {
     return _then(
@@ -203,14 +203,14 @@ class __$$HomeStateImplCopyWithImpl<$Res>
             ? _value.pendingCount
             : pendingCount // ignore: cast_nullable_to_non_nullable
                   as int,
-        totalCount: null == totalCount
-            ? _value.totalCount
-            : totalCount // ignore: cast_nullable_to_non_nullable
+        mealCountToday: null == mealCountToday
+            ? _value.mealCountToday
+            : mealCountToday // ignore: cast_nullable_to_non_nullable
                   as int,
-        unreadNotificationCount: null == unreadNotificationCount
-            ? _value.unreadNotificationCount
-            : unreadNotificationCount // ignore: cast_nullable_to_non_nullable
-                  as int,
+        isMealRegisteredToday: null == isMealRegisteredToday
+            ? _value.isMealRegisteredToday
+            : isMealRegisteredToday // ignore: cast_nullable_to_non_nullable
+                  as bool,
         todaySchedule: freezed == todaySchedule
             ? _value.todaySchedule
             : todaySchedule // ignore: cast_nullable_to_non_nullable
@@ -228,8 +228,8 @@ class _$HomeStateImpl implements _HomeState {
     this.errorMessage,
     this.user,
     this.pendingCount = 0,
-    this.totalCount = 0,
-    this.unreadNotificationCount = 0,
+    this.mealCountToday = 0,
+    this.isMealRegisteredToday = false,
     this.todaySchedule,
   });
 
@@ -245,16 +245,16 @@ class _$HomeStateImpl implements _HomeState {
   final int pendingCount;
   @override
   @JsonKey()
-  final int totalCount;
+  final int mealCountToday;
   @override
   @JsonKey()
-  final int unreadNotificationCount;
+  final bool isMealRegisteredToday;
   @override
   final ScheduleRequestModel? todaySchedule;
 
   @override
   String toString() {
-    return 'HomeState(status: $status, errorMessage: $errorMessage, user: $user, pendingCount: $pendingCount, totalCount: $totalCount, unreadNotificationCount: $unreadNotificationCount, todaySchedule: $todaySchedule)';
+    return 'HomeState(status: $status, errorMessage: $errorMessage, user: $user, pendingCount: $pendingCount, mealCountToday: $mealCountToday, isMealRegisteredToday: $isMealRegisteredToday, todaySchedule: $todaySchedule)';
   }
 
   @override
@@ -268,13 +268,10 @@ class _$HomeStateImpl implements _HomeState {
             (identical(other.user, user) || other.user == user) &&
             (identical(other.pendingCount, pendingCount) ||
                 other.pendingCount == pendingCount) &&
-            (identical(other.totalCount, totalCount) ||
-                other.totalCount == totalCount) &&
-            (identical(
-                  other.unreadNotificationCount,
-                  unreadNotificationCount,
-                ) ||
-                other.unreadNotificationCount == unreadNotificationCount) &&
+            (identical(other.mealCountToday, mealCountToday) ||
+                other.mealCountToday == mealCountToday) &&
+            (identical(other.isMealRegisteredToday, isMealRegisteredToday) ||
+                other.isMealRegisteredToday == isMealRegisteredToday) &&
             (identical(other.todaySchedule, todaySchedule) ||
                 other.todaySchedule == todaySchedule));
   }
@@ -286,8 +283,8 @@ class _$HomeStateImpl implements _HomeState {
     errorMessage,
     user,
     pendingCount,
-    totalCount,
-    unreadNotificationCount,
+    mealCountToday,
+    isMealRegisteredToday,
     todaySchedule,
   );
 
@@ -306,8 +303,8 @@ abstract class _HomeState implements HomeState {
     final String? errorMessage,
     final UserModel? user,
     final int pendingCount,
-    final int totalCount,
-    final int unreadNotificationCount,
+    final int mealCountToday,
+    final bool isMealRegisteredToday,
     final ScheduleRequestModel? todaySchedule,
   }) = _$HomeStateImpl;
 
@@ -320,9 +317,9 @@ abstract class _HomeState implements HomeState {
   @override
   int get pendingCount;
   @override
-  int get totalCount;
+  int get mealCountToday;
   @override
-  int get unreadNotificationCount;
+  bool get isMealRegisteredToday;
   @override
   ScheduleRequestModel? get todaySchedule;
 
