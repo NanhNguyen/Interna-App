@@ -64,7 +64,7 @@ class _LoginPageViewState extends State<LoginPageView> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF7678ED),
+        backgroundColor: const Color(0xFF8B5CF6),
         body: Stack(
           children: [
             // Static Background with RepaintBoundary to prevent expensive gradient re-paints
@@ -75,7 +75,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Color(0xFF7678ED), Color(0xFF6366F1)],
+                      colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
                     ),
                   ),
                 ),
@@ -97,18 +97,42 @@ class _LoginPageViewState extends State<LoginPageView> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
-                              Icons.calendar_month,
-                              size: 64,
-                              color: const Color(0xFF7678ED),
+                            // Modern Logo Icon
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF8B5CF6).withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: ShaderMask(
+                                shaderCallback: (bounds) => const LinearGradient(
+                                  colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ).createShader(bounds),
+                                child: const Icon(
+                                  Icons.auto_awesome, // Modern star-like icon
+                                  size: 64,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              AppStrings.appName,
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF7678ED),
+                            const SizedBox(height: 20),
+                            // Gradient App Name
+                            ShaderMask(
+                              shaderCallback: (bounds) => const LinearGradient(
+                                colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ).createShader(bounds),
+                              child: const Text(
+                                AppStrings.appName,
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                  letterSpacing: -1,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 32),
@@ -168,7 +192,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                                         ? null
                                         : () => _handleLogin(context),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF7678ED),
+                                      backgroundColor: const Color(0xFF8B5CF6),
                                       foregroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),

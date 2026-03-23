@@ -62,7 +62,7 @@ class _MealPageState extends State<MealPage>
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF7678ED), Color(0xFF6366F1)],
+                colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -101,7 +101,7 @@ class _MealPageState extends State<MealPage>
             : _buildMyMealsView(),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => _showMealFormSheet(context),
-          backgroundColor: const Color(0xFF7678ED),
+          backgroundColor: const Color(0xFF8B5CF6),
           foregroundColor: Colors.white,
           icon: const Icon(Icons.add),
           label: const Text(
@@ -252,7 +252,7 @@ class _MealPageState extends State<MealPage>
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF7678ED),
+                color: Color(0xFF8B5CF6),
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -275,7 +275,7 @@ class _MealPageState extends State<MealPage>
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF7678ED),
+                    color: const Color(0xFF8B5CF6),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(
@@ -339,13 +339,13 @@ class _MealPageState extends State<MealPage>
     Color bgColor;
     Color borderColor;
     if (isSelected) {
-      bgColor = const Color(0xFF7678ED);
+      bgColor = const Color(0xFF8B5CF6);
       dayNumColor = Colors.white;
-      borderColor = const Color(0xFF7678ED);
+      borderColor = const Color(0xFF8B5CF6);
     } else if (isToday) {
-      bgColor = const Color(0xFF7678ED);
+      bgColor = const Color(0xFF8B5CF6);
       dayNumColor = Colors.white; // Changed from indigo
-      borderColor = const Color(0xFF7678ED);
+      borderColor = const Color(0xFF8B5CF6);
     } else if (isWeekend) {
       bgColor = Colors.grey.shade50;
       dayNumColor = Colors.grey.shade400;
@@ -378,8 +378,8 @@ class _MealPageState extends State<MealPage>
           _buildShiftBadge(
             label: 'Trưa',
             count: count,
-            color: const Color(0xFF7678ED),
-            bgColor: const Color(0xFF7678ED).withOpacity(0.12), // Added opacity for contrast
+            color: const Color(0xFF8B5CF6),
+            bgColor: const Color(0xFF8B5CF6).withOpacity(0.12), // Added opacity for contrast
             isSelected: isSelected,
           ),
         ],
@@ -460,13 +460,13 @@ class _MealPageState extends State<MealPage>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF7678ED).withOpacity(0.3),
+            color: const Color(0xFF8B5CF6).withOpacity(0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
         gradient: const LinearGradient(
-          colors: [Color(0xFF7678ED), Color(0xFF6366F1)],
+          colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -507,7 +507,7 @@ class _MealPageState extends State<MealPage>
             child: Text(
               '${items.length}',
               style: const TextStyle(
-                color: Color(0xFF7678ED),
+                color: Color(0xFF8B5CF6),
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -562,7 +562,7 @@ class _MealPageState extends State<MealPage>
           ),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: const Color(0xFF7678ED),
+              backgroundColor: const Color(0xFF8B5CF6),
               child: Text(
                 name.isNotEmpty ? name[0].toUpperCase() : '?',
                 style: const TextStyle(
@@ -589,7 +589,7 @@ class _MealPageState extends State<MealPage>
                       child: Icon(
                         Icons.note,
                         size: 18,
-                        color: Color(0xFF7678ED),
+                        color: Color(0xFF8B5CF6),
                       ),
                     ),
                   ),
@@ -708,7 +708,7 @@ class _MealPageState extends State<MealPage>
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF7678ED),
+                    color: const Color(0xFF8B5CF6),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
@@ -749,7 +749,7 @@ class _MealPageState extends State<MealPage>
                 icon: const Icon(Icons.add),
                 label: const Text('Đăng ký ngay'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF7678ED),
+                  backgroundColor: const Color(0xFF8B5CF6),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
@@ -790,7 +790,7 @@ class _MealPageState extends State<MealPage>
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: const Color(0xFF7678ED),
+                color: const Color(0xFF8B5CF6),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -816,7 +816,7 @@ class _MealPageState extends State<MealPage>
                       meal.weekdays.map((w) => w.displayName).join(', '),
                       style: const TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF7678ED),
+                        color: Color(0xFF8B5CF6),
                         fontWeight: FontWeight.w600,
                       ),
                     )
@@ -959,7 +959,7 @@ class _MealFormSheetState extends State<_MealFormSheet> {
                     'Bạn đang đăng ký cơm cho buổi trưa',
                     style: TextStyle(
                       fontSize: 15,
-                      color: Color(0xFF7678ED),
+                      color: Color(0xFF8B5CF6),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -977,7 +977,7 @@ class _MealFormSheetState extends State<_MealFormSheet> {
                       Switch(
                         value: _isRecurring,
                         onChanged: (v) => setState(() => _isRecurring = v),
-                        activeColor: const Color(0xFF7678ED),
+                        activeColor: const Color(0xFF8B5CF6),
                       ),
                     ],
                   ),
@@ -1050,7 +1050,7 @@ class _MealFormSheetState extends State<_MealFormSheet> {
                               ? null
                               : () => _submit(context),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF7678ED),
+                            backgroundColor: const Color(0xFF8B5CF6),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14),

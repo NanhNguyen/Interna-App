@@ -26,7 +26,7 @@ class HomePage extends StatelessWidget {
             flexibleSpace: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFF7678ED), Color(0xFF6366F1)],
+                  colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -154,7 +154,7 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   showScheduleFormModal(context, isInitialRecurring: false);
                 },
-                backgroundColor: const Color(0xFF7678ED),
+                backgroundColor: const Color(0xFF8B5CF6),
                 foregroundColor: Colors.white,
                 icon: const Icon(Icons.add),
                 label: const Text(
@@ -212,13 +212,13 @@ class HomePage extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF7678ED).withOpacity(0.2),
+            color: const Color(0xFF8B5CF6).withOpacity(0.2),
             offset: const Offset(0, 8),
             blurRadius: 24,
           ),
         ],
         gradient: const LinearGradient(
-          colors: [Color(0xFF7678ED), Color(0xFF6366F1)],
+          colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -253,7 +253,7 @@ class HomePage extends StatelessWidget {
     if (todaySchedule == null) return const SizedBox.shrink();
 
     final isLeave = todaySchedule.type == ScheduleType.LEAVE;
-    final color = const Color(0xFF7678ED); // Consistent blue
+    final color = const Color(0xFF8B5CF6); // Consistent blue
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -336,7 +336,7 @@ class HomePage extends StatelessWidget {
           context,
           AppStrings.schedule,
           Icons.calendar_month,
-          const Color(0xFF7678ED),
+          const Color(0xFF8B5CF6),
           tabIndex: 2,
         ),
         _buildActionItem(
@@ -368,7 +368,7 @@ class HomePage extends StatelessWidget {
           context,
           AppStrings.schedule,
           Icons.calendar_month,
-          const Color(0xFF7678ED),
+          const Color(0xFF8B5CF6),
           tabIndex: 2,
         ),
         _buildActionItem(
@@ -437,7 +437,7 @@ class HomePage extends StatelessWidget {
           context,
           AppStrings.notifications,
           Icons.notifications,
-          const Color(0xFF7678ED),
+          const Color(0xFF8B5CF6),
           tabIndex: 5,
           badgeCount: state.unreadNotificationCount,
         ),
@@ -581,7 +581,7 @@ class HomePage extends StatelessWidget {
             _buildStatCard(
               AppStrings.totalRequests,
               state.totalCount.toString(),
-              const Color(0xFF7678ED),
+              const Color(0xFF8B5CF6),
             ),
           ],
         ],

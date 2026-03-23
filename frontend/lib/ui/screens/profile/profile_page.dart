@@ -6,7 +6,6 @@ import '../../router/app_router.gr.dart';
 import '../../../data/constant/enums.dart';
 import 'cubit/profile_cubit.dart';
 import 'cubit/profile_state.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../../data/api/api_client.dart';
 import '../../../resource/app_strings.dart';
 
@@ -20,15 +19,34 @@ class ProfilePage extends StatelessWidget {
       child: BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {
           if (state.status == BaseStatus.success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(AppStrings.actionSuccessful),
-                backgroundColor: Colors.green,
-              ),
-            );
-            // Only navigate to login if user is logged out (state.user is null)
             if (state.user == null) {
-              context.router.replace(const LoginRoute());
+              // Show dialog for password/name change success which requires relogin
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (dialogContext) => AlertDialog(
+                  title: const Text('Thành công'),
+                  content: const Text(
+                    'Thông tin đã được cập nhật. Vui lòng đăng nhập lại để áp dụng thay đổi.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(dialogContext);
+                        context.router.replaceAll([const LoginRoute()]);
+                      },
+                      child: const Text('Đăng nhập'),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(AppStrings.actionSuccessful),
+                  backgroundColor: Colors.green,
+                ),
+              );
             }
           } else if (state.status == BaseStatus.error) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -73,7 +91,7 @@ class ProfilePage extends StatelessWidget {
                                   icon: const Icon(
                                     Icons.edit,
                                     size: 20,
-                                    color: const Color(0xFF7678ED),
+                                    color: const Color(0xFF8B5CF6),
                                   ),
                                   onPressed: () => _showEditNameDialog(
                                     context,
@@ -97,13 +115,13 @@ class ProfilePage extends StatelessWidget {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF7678ED).withOpacity(0.1),
+                                color: const Color(0xFF8B5CF6).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
                                 user?.role.displayName ?? 'Role',
                                 style: const TextStyle(
-                                  color: const Color(0xFF7678ED),
+                                  color: const Color(0xFF8B5CF6),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
@@ -144,7 +162,7 @@ class ProfilePage extends StatelessWidget {
       children: [
         CircleAvatar(
           radius: 60,
-          backgroundColor: const Color(0xFF7678ED),
+          backgroundColor: const Color(0xFF8B5CF6),
           backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
           child: avatarUrl == null
               ? Text(
@@ -157,70 +175,8 @@ class ProfilePage extends StatelessWidget {
                 )
               : null,
         ),
-        Positioned(
-          bottom: 0,
-          right: 0,
-          child: GestureDetector(
-            onTap: () => _pickAndUploadImage(context),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                color: const Color(0xFF7678ED),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.camera_alt,
-                color: Colors.white,
-                size: 20,
-              ),
-            ),
-          ),
-        ),
       ],
     );
-  }
-
-  Future<void> _pickAndUploadImage(BuildContext context) async {
-    final picker = ImagePicker();
-
-    final source = await showModalBottomSheet<ImageSource>(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Chọn ảnh đại diện',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            ListTile(
-              leading: const Icon(Icons.photo_library, color: const Color(0xFF7678ED)),
-              title: const Text('Thư viện ảnh'),
-              onTap: () => Navigator.pop(context, ImageSource.gallery),
-            ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt, color: const Color(0xFF7678ED)),
-              title: const Text('Chụp ảnh mới'),
-              onTap: () => Navigator.pop(context, ImageSource.camera),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    if (source != null && context.mounted) {
-      final image = await picker.pickImage(source: source, imageQuality: 70);
-
-      if (image != null && context.mounted) {
-        context.read<ProfileCubit>().uploadAvatar(image);
-      }
-    }
   }
 
   void _showEditNameDialog(BuildContext context, String currentName) {
@@ -344,7 +300,7 @@ class ProfilePage extends StatelessWidget {
       onTap: onTap,
       leading: Icon(
         icon,
-        color: isDestructive ? Colors.red : const Color(0xFF7678ED),
+        color: isDestructive ? Colors.red : const Color(0xFF8B5CF6),
         size: 30,
       ), // Increased
       title: Text(

@@ -116,7 +116,7 @@ class _CreateAccountModalState extends State<CreateAccountModal> {
 
   @override
   Widget build(BuildContext context) {
-    final color = const Color(0xFF7678ED);
+    final color = const Color(0xFF8B5CF6);
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
@@ -135,7 +135,7 @@ class _CreateAccountModalState extends State<CreateAccountModal> {
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFF7678ED), Color(0xFF6366F1)],
+                  colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),

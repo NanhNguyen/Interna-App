@@ -39,7 +39,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF7678ED), Color(0xFF6366F1)],
+                colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -103,8 +103,8 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  const Color(0xFF7678ED),
-                                  const Color(0xFF7678ED),
+                                  const Color(0xFF8B5CF6),
+                                  const Color(0xFF8B5CF6),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -205,7 +205,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
         floatingActionButton: _isHR
             ? FloatingActionButton.extended(
                 onPressed: () => _showComposeSheet(context),
-                backgroundColor: const Color(0xFF7678ED),
+                backgroundColor: const Color(0xFF8B5CF6),
                 foregroundColor: Colors.white,
                 icon: const Icon(Icons.campaign),
                 label: const Text(
@@ -249,7 +249,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
               children: [
                 CircleAvatar(
                   radius: 22,
-                  backgroundColor: const Color(0xFF7678ED),
+                  backgroundColor: const Color(0xFF8B5CF6),
                   child: Text(
                     authorLetter,
                     style: const TextStyle(
@@ -312,7 +312,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF7678ED),
+                      color: const Color(0xFF8B5CF6),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -457,7 +457,7 @@ class _ComposeSheetState extends State<_ComposeSheet> {
             const SizedBox(height: 16),
             Row(
               children: [
-                Icon(Icons.campaign, color: const Color(0xFF7678ED)),
+                Icon(Icons.campaign, color: const Color(0xFF8B5CF6)),
                 const SizedBox(width: 8),
                 const Text(
                   'Soạn thông báo HR',
@@ -521,7 +521,7 @@ class _ComposeSheetState extends State<_ComposeSheet> {
                             ),
                           ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF7678ED),
+                      backgroundColor: const Color(0xFF8B5CF6),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),

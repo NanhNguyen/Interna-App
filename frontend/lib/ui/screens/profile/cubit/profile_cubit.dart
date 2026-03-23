@@ -1,6 +1,5 @@
 import 'package:injectable/injectable.dart';
 import '../../../cubit/base_cubit.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../../../data/constant/enums.dart';
 import '../../../../data/service/auth_service.dart';
 import '../../../di/di_config.dart';
@@ -71,24 +70,24 @@ class ProfileCubit extends BaseCubit<ProfileState> {
   Future<void> updateProfile({required String name}) async {
     await safeCall(() async {
       await _authService.updateProfile(name: name);
-      emit(
-        state.copyWith(
-          status: BaseStatus.success,
-          user: _authService.currentUser,
-        ),
-      );
+      
+      // Logout after updating profile to force refresh of data upon re-login
+      await _authService.logout();
+      if (getIt.isRegistered<HomeCubit>()) {
+        getIt.resetLazySingleton<HomeCubit>();
+      }
+      if (getIt.isRegistered<NotificationCubit>()) {
+        getIt.resetLazySingleton<NotificationCubit>();
+      }
+      if (getIt.isRegistered<MainCubit>()) {
+        getIt.resetLazySingleton<MainCubit>();
+      }
+      if (getIt.isRegistered<ScheduleCubit>()) {
+        getIt.resetLazySingleton<ScheduleCubit>();
+      }
+
+      emit(state.copyWith(status: BaseStatus.success, user: null));
     });
   }
 
-  Future<void> uploadAvatar(XFile file) async {
-    await safeCall(() async {
-      await _authService.uploadAvatar(file);
-      emit(
-        state.copyWith(
-          status: BaseStatus.success,
-          user: _authService.currentUser,
-        ),
-      );
-    });
-  }
 }

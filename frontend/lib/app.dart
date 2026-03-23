@@ -43,7 +43,7 @@ class App extends StatelessWidget {
           ),
           iconTheme: const IconThemeData(color: Colors.black87, size: 28),
         ),
-        iconTheme: IconThemeData(color: const Color(0xFF7678ED), size: 26),
+        iconTheme: const IconThemeData(color: Color(0xFF7678ED), size: 26),
         textTheme: GoogleFonts.interTextTheme(
           const TextTheme(
             bodyLarge: TextStyle(fontSize: 20), // Increased from 18

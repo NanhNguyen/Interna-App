@@ -37,7 +37,7 @@ class _ManagerRequestPageState extends State<ManagerRequestPage> {
             flexibleSpace: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFF7678ED), Color(0xFF6366F1)],
+                  colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -284,10 +284,10 @@ class _ManagerRequestPageState extends State<ManagerRequestPage> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: _sortOrder,
-          icon: const Icon(Icons.sort, color: const Color(0xFF7678ED)),
+          icon: const Icon(Icons.sort, color: const Color(0xFF8B5CF6)),
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF7678ED),
+            color: const Color(0xFF8B5CF6),
           ),
           onChanged: (String? newValue) {
             if (newValue != null) {
@@ -378,7 +378,7 @@ class _ManagerRequestPageState extends State<ManagerRequestPage> {
   }) {
     final first = group.first;
     final isRecurring = first.isRecurring;
-    final color = const Color(0xFF7678ED);
+    final color = const Color(0xFF8B5CF6);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),

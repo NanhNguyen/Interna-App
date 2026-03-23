@@ -49,7 +49,7 @@ class _SchedulePageState extends State<SchedulePage> {
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF7678ED), Color(0xFF6366F1)],
+                colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -87,7 +87,7 @@ class _SchedulePageState extends State<SchedulePage> {
                 Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Color(0xFF7678ED), Color(0xFF6366F1)],
+                      colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -198,7 +198,7 @@ class _SchedulePageState extends State<SchedulePage> {
                     titleTextStyle: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF7678ED),
+                      color: Color(0xFF8B5CF6),
                     ),
                   ),
                   daysOfWeekHeight: 45,
@@ -377,7 +377,7 @@ class _SchedulePageState extends State<SchedulePage> {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF7678ED),
+                color: Color(0xFF8B5CF6),
               ),
               overflow: TextOverflow.ellipsis,
             ),
@@ -487,7 +487,7 @@ class _SchedulePageState extends State<SchedulePage> {
           hintStyle: TextStyle(fontSize: 16, color: Colors.grey.shade400),
           prefixIcon: const Icon(
             Icons.person_search_rounded,
-            color: Color(0xFF7678ED),
+            color: Color(0xFF8B5CF6),
             size: 24,
           ),
           suffixIcon: _filterEmployee.isNotEmpty
@@ -516,7 +516,7 @@ class _SchedulePageState extends State<SchedulePage> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF7678ED), width: 1.5),
+            borderSide: const BorderSide(color: Color(0xFF8B5CF6), width: 1.5),
           ),
         ),
       ),
@@ -559,14 +559,14 @@ class _SchedulePageState extends State<SchedulePage> {
     Color bgColor;
     Color borderColor;
     if (isSelected) {
-      bgColor = const Color(0xFF7678ED);
+      bgColor = const Color(0xFF8B5CF6);
       dayNumColor = Colors.white;
-      borderColor = const Color(0xFF7678ED);
+      borderColor = const Color(0xFF8B5CF6);
     } else if (isToday) {
-      bgColor = const Color(0xFF7678ED);
+      bgColor = const Color(0xFF8B5CF6);
       dayNumColor =
-          Colors.white; // Changed from Color(0xFF7678ED) to white for contrast
-      borderColor = const Color(0xFF7678ED);
+          Colors.white; // Changed from Color(0xFF8B5CF6) to white for contrast
+      borderColor = const Color(0xFF8B5CF6);
     } else if (isWeekend) {
       bgColor = Colors.grey.shade50;
       dayNumColor = Colors.grey.shade400;
@@ -620,8 +620,8 @@ class _SchedulePageState extends State<SchedulePage> {
             _buildShiftBadge(
               label: 'SA',
               count: hasSchedules ? morningCount : 0,
-              color: const Color(0xFF7678ED),
-              bgColor: const Color(0xFF7678ED).withOpacity(0.12),
+              color: const Color(0xFF8B5CF6),
+              bgColor: const Color(0xFF8B5CF6).withOpacity(0.12),
               isSelected: isSelected,
               isEmpty: !hasSchedules,
             ),
@@ -730,7 +730,7 @@ class _SchedulePageState extends State<SchedulePage> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF7678ED), // Changed from red
+                  color: const Color(0xFF8B5CF6), // Changed from red
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -744,9 +744,9 @@ class _SchedulePageState extends State<SchedulePage> {
                 ),
               ),
             ] else
-              _dot(const Color(0xFF7678ED)), // Changed from red
+              _dot(const Color(0xFF8B5CF6)), // Changed from red
           ],
-          if (hasWork) _dot(const Color(0xFF7678ED)),
+          if (hasWork) _dot(const Color(0xFF8B5CF6)),
         ],
       ),
     );
@@ -902,7 +902,7 @@ class _SchedulePageState extends State<SchedulePage> {
         final req = filteredEvents[index];
         final isLeave = req.type == ScheduleType.LEAVE;
         final shiftColor =
-            _getColorForShift(req.shift) ?? const Color(0xFF7678ED);
+            _getColorForShift(req.shift) ?? const Color(0xFF8B5CF6);
         final statusColor = req.status == RequestStatus.APPROVED
             ? Colors.green
             : (req.status == RequestStatus.PENDING
@@ -1014,7 +1014,7 @@ class _SchedulePageState extends State<SchedulePage> {
         shift.toUpperCase() == 'CHIỀU') {
       return Colors.deepOrange.shade700;
     } else if (shift == AppStrings.allDay || shift.toUpperCase() == 'CẢ NGÀY') {
-      return const Color(0xFF7678ED);
+      return const Color(0xFF8B5CF6);
     }
     return null;
   }

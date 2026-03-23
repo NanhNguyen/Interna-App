@@ -80,7 +80,7 @@ class _NotificationPageState extends State<NotificationPage> {
             flexibleSpace: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFF7678ED), Color(0xFF6366F1)],
+                  colors: [Color(0xFF8B5CF6), Color(0xFF0EA5E9)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -334,7 +334,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF7678ED),
+                          color: const Color(0xFF8B5CF6),
                         ),
                       ),
                     ),
@@ -450,7 +450,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF7678ED),
+                          color: const Color(0xFF8B5CF6),
                         ),
                       ),
                     ),
@@ -622,7 +622,7 @@ class _NotificationPageState extends State<NotificationPage> {
                         style: TextStyle(
                           fontSize: 14,
                           color: isUnread
-                              ? const Color(0xFF7678ED)
+                              ? const Color(0xFF8B5CF6)
                               : Colors.grey.shade400,
                           fontWeight: isUnread
                               ? FontWeight.bold
@@ -688,13 +688,13 @@ class _NotificationPageState extends State<NotificationPage> {
   Color _getIconColor(String type) {
     switch (type) {
       case 'REQUEST_CREATED':
-        return const Color(0xFF7678ED);
+        return const Color(0xFF8B5CF6);
       case 'REQUEST_APPROVED':
         return Colors.green;
       case 'REQUEST_REJECTED':
         return Colors.red;
       case 'ANNOUNCEMENT':
-        return const Color(0xFF7678ED);
+        return const Color(0xFF8B5CF6);
       default:
         return Colors.grey;
     }
